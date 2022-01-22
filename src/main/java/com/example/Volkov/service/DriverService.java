@@ -1,16 +1,17 @@
-package com.example.Volkov.dao;
+package com.example.Volkov.service;
 
 import com.example.Volkov.dto.Car;
 import com.example.Volkov.dto.Driver;
 import com.example.Volkov.exceptions.ObjectNotFoundException;
 import lombok.Getter;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class DriversRepository {
+@Service
+public class DriverService {
 
     @Getter
     private List<Driver> allDrivers = new ArrayList<>();
