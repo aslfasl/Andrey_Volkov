@@ -1,4 +1,7 @@
-package com.example.Volkov.dto;
+package com.example.Volkov.dao;
+
+import com.example.Volkov.dto.Car;
+import com.example.Volkov.dto.Driver;
 
 import java.util.*;
 

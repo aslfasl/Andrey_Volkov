@@ -8,6 +8,8 @@ public class Car {
     @NonNull private final String carId;
     @NonNull private String model;
     @NonNull private String color;
+    private int ownerId = 0;
+
 
     @Override
     public boolean equals(Object o) {
@@ -18,5 +20,7 @@ public class Car {
 
         return carId.equals(car.carId);
     }
+
+
 
 }
