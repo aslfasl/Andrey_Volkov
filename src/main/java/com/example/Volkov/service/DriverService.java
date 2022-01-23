@@ -2,6 +2,7 @@ package com.example.Volkov.service;
 
 import com.example.Volkov.dto.Car;
 import com.example.Volkov.dto.Driver;
+import com.example.Volkov.exceptions.WrongAgeException;
 import com.example.Volkov.exceptions.ObjectNotFoundException;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
@@ -17,8 +18,15 @@ public class DriverService {
     private List<Driver> allDrivers = new ArrayList<>();
 
 
-    public void addDriver(Driver newDriver) {
-        if (!allDrivers.contains(newDriver)) {
+    public void addDriver(Driver newDriver) throws WrongAgeException {
+        if (!allDrivers.contains(newDriver) && ValidationService.driverAgeCheck(newDriver.getDateOfBirth())) {
+            allDrivers.add(newDriver);
+        }
+    }
+
+    public void addNewDriver(int driverId, String name, LocalDate birthDate) throws WrongAgeException {
+        Driver newDriver = new Driver(driverId, name, birthDate);
+        if (ValidationService.driverAgeCheck(birthDate)){
             allDrivers.add(newDriver);
         }
     }

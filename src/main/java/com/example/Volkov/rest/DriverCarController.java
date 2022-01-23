@@ -2,6 +2,8 @@ package com.example.Volkov.rest;
 
 import com.example.Volkov.dto.Car;
 import com.example.Volkov.dto.Driver;
+import com.example.Volkov.exceptions.WrongAgeException;
+import com.example.Volkov.exceptions.InsuranceException;
 import com.example.Volkov.exceptions.ObjectNotFoundException;
 import com.example.Volkov.service.MainService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +30,46 @@ public class DriverCarController {
         if (driver == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        mainService.driverService.addDriver(driver);
+        try {
+            mainService.driverService.addDriver(driver);
+        } catch (WrongAgeException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(driver, headers, HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(driver, headers, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/create_car")
+    public ResponseEntity<Car> createCar(
+            @RequestParam String carId,
+            @RequestParam String model,
+            @RequestParam String color,
+            @RequestParam(required = false, defaultValue = "false") boolean insurance) {
+        HttpHeaders headers = new HttpHeaders();
+        try {
+            mainService.carService.addNewCar(carId, model, color, insurance);
+        } catch (InsuranceException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(headers, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/create_driver")
+    public ResponseEntity<Driver> createDriver(
+            @RequestParam int driverId,
+            @RequestParam String name,
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthDate) {
+        HttpHeaders headers = new HttpHeaders();
+        try {
+            mainService.driverService.addNewDriver(driverId, name, birthDate);
+        } catch (WrongAgeException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
     @PostMapping("/add_car")

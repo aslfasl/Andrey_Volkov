@@ -2,6 +2,7 @@ package com.example.Volkov.service;
 
 import com.example.Volkov.dto.Car;
 import com.example.Volkov.dto.Driver;
+import com.example.Volkov.exceptions.WrongAgeException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,7 +15,7 @@ public class MainService {
     {
         Driver testDriver1 = new Driver(1,"First Driver", LocalDate.of(2000, 1, 2));
         Driver testDriver2 = new Driver(
-                2,"Second Driver", LocalDate.of(1900, 12, 31));
+                2,"Second Driver", LocalDate.of(2000, 12, 31));
 
         Car testCar1 = new Car("a1", "opel", "green", true);
         Car testCar2 = new Car("b2", "lada", "black", true);
@@ -26,8 +27,13 @@ public class MainService {
         carService.addCar(testCar3);
         carService.addCar(testCar4);
 
-        driverService.addDriver(testDriver1);
-        driverService.addDriver(testDriver2);
+        try {
+            driverService.addDriver(testDriver1);
+            driverService.addDriver(testDriver2);
+        } catch (WrongAgeException e) {
+            e.printStackTrace();
+        }
+
 
         testDriver1.addNewCar(testCar1);
         testDriver1.addNewCar(testCar2);
