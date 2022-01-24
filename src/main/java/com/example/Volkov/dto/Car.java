@@ -1,11 +1,13 @@
 package com.example.Volkov.dto;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.NonNull;
 
 @Data
 public class Car {
     @NonNull
+    @Getter
     private final String carId;
     @NonNull
     private String model;

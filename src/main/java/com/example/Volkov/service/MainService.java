@@ -40,4 +40,11 @@ public class MainService {
         testDriver2.addNewCar(testCar3);
         testDriver2.addNewCar(testCar4);
     }
+
+    public static void main(String[] args) {
+        Car testCar1 = new Car("a1", "opel", "green", true);
+        System.out.println(testCar1);
+        Boolean x = testCar1.toString().contains("carId=a1");
+        System.out.println(x);
+    }
 }
