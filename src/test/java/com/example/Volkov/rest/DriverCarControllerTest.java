@@ -2,7 +2,9 @@ package com.example.Volkov.rest;
 
 import com.example.Volkov.dto.Car;
 import com.example.Volkov.dto.Driver;
+import com.example.Volkov.exceptions.WrongAgeException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,8 +28,37 @@ class DriverCarControllerTest {
     private MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
+    @Autowired
+    DriverCarController driverCarController;
 
+    @BeforeEach
+    public void setUp() {
+        Driver testDriver1 = new Driver(1,"First Driver", LocalDate.of(2000, 1, 2));
+        Driver testDriver2 = new Driver(
+                2,"Second Driver", LocalDate.of(2000, 12, 31));
 
+        Car testCar1 = new Car("a1", "opel", "green", true);
+        Car testCar2 = new Car("b2", "lada", "black", true);
+        Car testCar3 = new Car("c3", "bmw", "white", true);
+        Car testCar4 = new Car("d4", "jeep", "yellow", true);
+
+        driverCarController.getCarService().addCar(testCar1);
+        driverCarController.getCarService().addCar(testCar2);
+        driverCarController.getCarService().addCar(testCar3);
+        driverCarController.getCarService().addCar(testCar4);
+
+        try {
+            driverCarController.getDriverService().addDriver(testDriver1);
+            driverCarController.getDriverService().addDriver(testDriver2);
+        } catch (WrongAgeException e) {
+            e.printStackTrace();
+        }
+
+        testDriver1.addNewCar(testCar1);
+        testDriver1.addNewCar(testCar2);
+        testDriver2.addNewCar(testCar3);
+        testDriver2.addNewCar(testCar4);
+    }
 
 
     @Test
@@ -47,7 +78,7 @@ class DriverCarControllerTest {
     }
 
     @Test
-    void shoudCreateCarWithRequestedParams() throws Exception {
+    void shouldCreateCarWithRequestedParams() throws Exception {
         int status = mockMvc.perform((post("/controller/create_car?carId=xxx&model=suzuki&color=blue&insurance=true")))
                 .andReturn()
                 .getResponse()
@@ -91,7 +122,10 @@ class DriverCarControllerTest {
                 .getContentAsString();
 
         List<Car> carList = Arrays.asList(objectMapper.readValue(contentAsString, Car[].class));
-        assertTrue(carList.contains(new Car("b2", "lada", "black", true)));
+
+        assertEquals(1, carList.stream()
+                .findAny()
+                .get().getOwnerId());
 
 
     }
@@ -177,7 +211,7 @@ class DriverCarControllerTest {
 
         List<Driver> carList = Arrays.asList(objectMapper.readValue(contentAsString, Driver[].class));
         assertTrue(carList.contains(new Driver(
-                2,"Second Driver", LocalDate.of(2000, 12, 31))));
+                2, "Second Driver", LocalDate.of(2000, 12, 31))));
     }
 
     @Test
