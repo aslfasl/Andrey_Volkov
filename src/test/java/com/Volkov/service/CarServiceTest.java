@@ -1,20 +1,33 @@
 package com.Volkov.service;
 
 import com.Volkov.db.entity.CarEntity;
+import com.Volkov.db.entity.DriverEntity;
 import com.Volkov.db.repo.CarRepository;
+import com.Volkov.dto.CarDto;
+import com.Volkov.dto.DriverDto;
+import com.Volkov.exceptions.InsuranceException;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.exceptions.ObjectNotFoundException;
 import com.Volkov.service.CarService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.apache.tomcat.jni.Local;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class CarServiceTest {
+
+    ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private CarRepository carRepositoryTest;
@@ -25,6 +38,24 @@ class CarServiceTest {
     @AfterEach
     void tearDown() {
         carRepositoryTest.deleteAll();
+    }
+
+    @Test
+    void DTOtest() throws InsuranceException {
+        ObjectMapper objectMapper = JsonMapper.builder()
+                .findAndAddModules()
+                .build();
+        CarEntity carEntity = new CarEntity("aaa", "bmw", "green", true);
+        DriverEntity driverEntity = new DriverEntity("testDriver", LocalDate.of(2000, 1, 1));
+        driverEntity.addNewCar(carEntity);
+        System.out.println(carEntity.getOwner());
+        System.out.println(carEntity);
+        CarDto carDto = objectMapper.convertValue(carEntity, new TypeReference<>() {
+        });
+        DriverDto driverDto = objectMapper.convertValue(driverEntity, new TypeReference<DriverDto>() {
+        });
+        System.out.println(driverDto);
+        System.out.println(carDto);
     }
 
     @Test

@@ -1,8 +1,10 @@
 package com.Volkov.db.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -17,6 +19,7 @@ public class CarEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column()
+    @JsonIgnore
     private int carId;
 
     @Column()
@@ -33,6 +36,8 @@ public class CarEntity {
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
+    @ToString.Exclude
+    @JsonIgnore
     private DriverEntity owner;
 
     public CarEntity(String registrationNumber, String model, String color, boolean insurance) {

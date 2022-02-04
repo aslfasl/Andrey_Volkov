@@ -3,6 +3,7 @@ package com.Volkov.db.entity;
 import com.Volkov.exceptions.InsuranceException;
 
 import com.Volkov.service.ValidationService;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,6 +23,7 @@ public class DriverEntity {
     @Id
     @Column()
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private int driverId;
 
     @Column()
@@ -30,6 +32,7 @@ public class DriverEntity {
     @Column()
     private LocalDate birthDate;
 
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
             mappedBy = "owner")
