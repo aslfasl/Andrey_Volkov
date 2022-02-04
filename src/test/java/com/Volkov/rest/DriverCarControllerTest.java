@@ -28,10 +28,10 @@ class DriverCarControllerTest {
     private MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
-    @Autowired
-    DriverRepository driverRepositoryTest;
-    @Autowired
-    CarRepository carRepositoryTest;
+//    @Autowired
+//    DriverRepository driverRepositoryTest;
+//    @Autowired
+//    CarRepository carRepositoryTest;
 //
 ////    @BeforeEach
 ////    public void setUp() {
@@ -76,7 +76,6 @@ class DriverCarControllerTest {
                 .getStatus();
 
         assertEquals(201, status);
-
     }
 
     @Test
@@ -115,8 +114,16 @@ class DriverCarControllerTest {
         assertEquals(201, status);
     }
 
-    @Test
-    void shouldGetDriverCarsByDriverId() throws Exception {
+//    @Test
+//    void shouldGetDriverCarsByDriverId() throws Exception {
+        //DOING
+//        System.out.println(mockMvc.perform(get("/controller/get_driver_cars/1"))
+//                .andExpect(status().isOk())
+//                .andReturn()
+//                .getResponse()
+//                .getContentAsString());
+//
+//
 //        DriverEntity driver = new DriverEntity("TestDriver", LocalDate.of(2000, 1, 1));
 //        CarEntity car1 = new CarEntity("a1", "lada", "white", true);
 //        CarEntity car2 = new CarEntity("b2", "opel", "black", true);
@@ -136,7 +143,7 @@ class DriverCarControllerTest {
 //        assertEquals(1, carEntityList.stream()
 //                .findAny()
 //                .get());
-    }
+//    }
 
 ////    @Test
 ////    void shouldGetDriverByCarId() throws Exception {
@@ -209,28 +216,30 @@ class DriverCarControllerTest {
 ////
 ////    }
 //
-////    @Test
-////    void shouldGetAllDriversList() throws Exception {
-////        String contentAsString = this.mockMvc.perform(get("/controller/get_all_drivers/"))
-////                .andExpect(status().isFound())
-////                .andReturn()
-////                .getResponse()
-////                .getContentAsString();
-////
-////        List<DriverEntity> carList = Arrays.asList(objectMapper.readValue(contentAsString, DriverEntity[].class));
-////        assertTrue(carList.contains(new DriverEntity(
-////                2, "Second Driver", LocalDate.of(2000, 12, 31))));
-////    }
-//
-////    @Test
-////    void shouldGetAllCarsList() throws Exception {
-////        String contentAsString = this.mockMvc.perform(get("/controller/get_all_cars"))
-////                .andExpect(status().isFound())
-////                .andReturn()
-////                .getResponse()
-////                .getContentAsString();
-////
-////        List<CarEntity> carEntityList = Arrays.asList(objectMapper.readValue(contentAsString, CarEntity[].class));
-////        assertTrue(carEntityList.contains(new CarEntity("d4", "jeep", "yellow", true)));
-////    }
+    @Test
+    void shouldGetAllDriversList() throws Exception {
+        String contentAsString = this.mockMvc.perform(get("/controller/get_all_drivers/"))
+                .andExpect(status().isFound())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<DriverEntity> carList = Arrays.asList(objectMapper.readValue(contentAsString, DriverEntity[].class));
+
+        System.out.println(carList);
+        //        assertTrue(carList.contains(new DriverEntity(
+//                2, "Second Driver", LocalDate.of(2000, 12, 31))));
+    }
+
+    @Test
+    void shouldGetAllCarsList() throws Exception {
+        String contentAsString = this.mockMvc.perform(get("/controller/get_all_cars"))
+                .andExpect(status().isFound())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<CarEntity> carEntityList = Arrays.asList(objectMapper.readValue(contentAsString, CarEntity[].class));
+        System.out.println(carEntityList);
+    }
 }

@@ -12,6 +12,7 @@ import java.util.List;
 
 @Repository
 public interface DriverRepository extends JpaRepository<DriverEntity, Integer> {
+
     boolean existsDriverByNameAndBirthDate(String name, LocalDate birthdate);
 
     @Query(value = "SELECT * FROM driver_entity de\n" +

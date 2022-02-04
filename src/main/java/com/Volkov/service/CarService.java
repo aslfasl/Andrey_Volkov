@@ -2,6 +2,7 @@ package com.Volkov.service;
 
 import com.Volkov.db.entity.CarEntity;
 import com.Volkov.db.repo.CarRepository;
+import com.Volkov.dto.Car;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
+import org.modelmapper.ModelMapper;
 
 import javax.annotation.PostConstruct;
 
@@ -22,6 +23,7 @@ import java.util.Optional;
 public class CarService {
 
     private final CarRepository carRepository;
+    private final ModelMapper modelMapper;
 
     @SneakyThrows
     @PostConstruct
@@ -45,6 +47,15 @@ public class CarService {
         Page<CarEntity> cars = carRepository.findAll(PageRequest.of(offset, pageSize)
                 .withSort(Sort.by(Sort.Direction.ASC, field)));
         return cars;
+    }
+
+    public Car getCarByRegistrationNumber(String regNumber) throws ObjectNotFoundException {
+        CarEntity car = carRepository.getCarEntityByRegistrationNumber(regNumber);
+        if (car == null) {
+            throw new ObjectNotFoundException("Car not found");
+        }
+        return modelMapper.map(car, Car.class);
+
     }
 
 

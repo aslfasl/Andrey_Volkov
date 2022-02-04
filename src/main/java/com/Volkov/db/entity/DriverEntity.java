@@ -5,7 +5,6 @@ import com.Volkov.exceptions.InsuranceException;
 import com.Volkov.service.ValidationService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -18,10 +17,6 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @Table()
-//@NamedEntityGraph(
-//        name = "graph.driverCars",
-//        attributeNodes = @NamedAttributeNode("cars")
-//)
 public class DriverEntity {
 
     @Id

@@ -186,7 +186,7 @@ public class DriverCarController {
 //
 //    @GetMapping("/get_all_drivers")
 //    public ResponseEntity<List<DriverEntity>> getAllDrivers() {
-//        return new ResponseEntity<>(driverService.getAllDriverEntities(), HttpStatus.FOUND);
+//        return new ResponseEntity<>(driverService., HttpStatus.FOUND); // FIND ALL
 //    }
 //
 //    @GetMapping("/get_all_cars")
