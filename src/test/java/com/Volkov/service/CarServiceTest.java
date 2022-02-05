@@ -1,7 +1,9 @@
 package com.Volkov.service;
 
 import com.Volkov.db.entity.CarEntity;
+import com.Volkov.db.entity.DriverEntity;
 import com.Volkov.db.repo.CarRepository;
+import com.Volkov.db.repo.DriverRepository;
 import com.Volkov.dto.CarDto;
 import com.Volkov.dto.Converter;
 import com.Volkov.exceptions.InsuranceException;
@@ -12,6 +14,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import javax.sound.midi.Soundbank;
+import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,7 +53,7 @@ class CarServiceTest {
     }
 
     @Test
-    void shouldThrowObjectNotFoundExceptionAfterGetCarById() throws ObjectNotFoundException {
+    void shouldThrowObjectNotFoundExceptionAfterGetCarById() {
         CarEntity car = new com.Volkov.db.entity.CarEntity();
         carRepositoryTest.save(car);
 
@@ -71,7 +77,7 @@ class CarServiceTest {
     }
 
     @Test
-    void shouldThrowObjectNotFoundExceptionWhenGetCarByRegNumber() throws ObjectNotFoundException {
+    void shouldThrowObjectNotFoundExceptionWhenGetCarByRegNumber() {
         String regNumber = "aaa";
 
         ObjectNotFoundException thrown = assertThrows(ObjectNotFoundException.class,
@@ -163,6 +169,23 @@ class CarServiceTest {
         assertEquals(regNumber, car.getRegistrationNumber());
         assertEquals(model, car.getModel());
         assertEquals(color, car.getColor());
+    }
+
+    @Test
+    void shouldGetAllCars() {
+        CarEntity car1 = new CarEntity("a1", "model", "color", true);
+        CarEntity car2 = new CarEntity("b2", "model", "color", true);
+        CarEntity car3 = new CarEntity("c3", "model", "color", true);
+        carRepositoryTest.save(car1);
+        carRepositoryTest.save(car2);
+        carRepositoryTest.save(car3);
+
+        List<CarDto> allCars = carServiceTest.getAllCars();
+
+        assertEquals(3, allCars.size());
+        assertEquals("a1", allCars.get(0).getRegistrationNumber());
+        assertEquals("b2", allCars.get(1).getRegistrationNumber());
+        assertEquals("c3", allCars.get(2).getRegistrationNumber());
     }
 
 }

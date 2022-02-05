@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -97,6 +99,13 @@ public class CarService {
             car.setColor(newColor);
         }
         carRepository.save(car);
+    }
+
+    public List<CarDto> getAllCars(){
+        return carRepository.findAll()
+                .stream()
+                .map(carEntity -> Converter.convertValue(carEntity, CarDto.class))
+                .collect(Collectors.toList());
     }
 
     public Page<CarEntity> findCarsWithSortAndPagination(int offset, int pageSize, String field) {

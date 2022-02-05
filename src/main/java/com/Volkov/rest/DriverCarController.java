@@ -2,6 +2,7 @@ package com.Volkov.rest;
 
 import com.Volkov.db.entity.DriverEntity;
 import com.Volkov.dto.CarDto;
+import com.Volkov.dto.DriverDto;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.exceptions.ObjectNotFoundException;
 import com.Volkov.exceptions.WrongAgeException;
@@ -26,18 +27,18 @@ public class DriverCarController {
     private CarService carService;
 
     @PostMapping("/add_driver")
-    public ResponseEntity<DriverEntity> addDriverToDatabase(@RequestBody DriverEntity driverEntity) {
+    public ResponseEntity<DriverDto> addDriverToDatabase(@RequestBody DriverDto driverDto) {
         HttpHeaders headers = new HttpHeaders();
-        if (driverEntity == null) {
+        if (driverDto == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         try {
-            driverService.addDriver(driverEntity);
-        } catch (WrongAgeException e) {
+            driverService.addDriver(driverDto);
+        } catch (WrongAgeException | ObjectAlreadyExistsException e) {
             e.printStackTrace();
-            return new ResponseEntity<>(driverEntity, headers, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(driverDto, headers, HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(driverEntity, headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(driverDto, headers, HttpStatus.CREATED);
     }
 
     @PostMapping("/create_car")
@@ -87,15 +88,15 @@ public class DriverCarController {
         return new ResponseEntity<>(carDto, headers, HttpStatus.CREATED);
     }
 
-    @GetMapping("/get_driver_cars/{driverId}")
-    public ResponseEntity<List<com.Volkov.db.entity.CarEntity>> getDriverCars(@PathVariable int driverId) {
-        try {
-            return new ResponseEntity<>(driverService.getDriverById(driverId).getCars(), HttpStatus.OK);
-        } catch (ObjectNotFoundException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
+//    @GetMapping("/get_driver_cars/{driverId}")
+//    public ResponseEntity<List<CarDto>> getDriverCars(@PathVariable int driverId) {
+//        try {
+//            return new ResponseEntity<>(driverService.getDriverById(driverId).getCars(), HttpStatus.OK);
+//        } catch (ObjectNotFoundException e) {
+//            e.printStackTrace();
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
+//    }
 
 ////    @GetMapping("/driver_by_carId")
 ////    public ResponseEntity<DriverEntity> getDriver(@RequestParam String carId) {

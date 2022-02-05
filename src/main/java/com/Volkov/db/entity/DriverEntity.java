@@ -2,6 +2,7 @@ package com.Volkov.db.entity;
 
 import com.Volkov.exceptions.InsuranceException;
 
+import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.service.ValidationService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -43,8 +44,11 @@ public class DriverEntity {
         this.birthDate = birthDate;
     }
 
-    public void addNewCar(CarEntity car) throws InsuranceException {
-        if (!cars.contains(car) && ValidationService.insuranceCheck(car)) {
+    public void addNewCar(CarEntity car) throws InsuranceException, ObjectAlreadyExistsException {
+        if (cars.contains(car)) {
+            throw new ObjectAlreadyExistsException("That driver already has this car");
+        }
+        if (ValidationService.insuranceCheck(car)){
             cars.add(car);
             car.setOwner(this);
         }

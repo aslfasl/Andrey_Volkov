@@ -3,6 +3,7 @@ package com.Volkov.db.repo;
 import com.Volkov.db.entity.CarEntity;
 import com.Volkov.db.entity.DriverEntity;
 import com.Volkov.exceptions.InsuranceException;
+import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ class DriverRepositoryTest {
     }
 
     @Test
-    void itShouldFindDriverEntityByCarRegistrationNumber() throws InsuranceException {
+    void itShouldFindDriverEntityByCarRegistrationNumber() throws InsuranceException, ObjectAlreadyExistsException {
         DriverEntity driver = new DriverEntity("Ivan", LocalDate.of(1999, 9, 11));
         CarEntity car = new CarEntity("aaa", "opel", "green", true);
         driver.addNewCar(car);
@@ -39,7 +40,7 @@ class DriverRepositoryTest {
     }
 
     @Test
-    void itShouldReturnDriverByIdWithHisCars() throws InsuranceException {
+    void itShouldReturnDriverByIdWithHisCars() throws InsuranceException, ObjectAlreadyExistsException {
         DriverEntity driver = new DriverEntity("Ivan", LocalDate.of(1999, 9, 11));
         CarEntity car = new CarEntity("aaa", "opel", "green", true);
         driver.addNewCar(car);
@@ -54,7 +55,7 @@ class DriverRepositoryTest {
     }
 
     @Test
-    void itShouldGetAllDriversWithInitializedCars() throws InsuranceException {
+    void itShouldGetAllDriversWithInitializedCars() throws InsuranceException, ObjectAlreadyExistsException {
         DriverEntity driver = new DriverEntity("Ivan", LocalDate.of(1999, 9, 11));
         CarEntity car = new CarEntity("aaa", "opel", "green", true);
         driver.addNewCar(car);
