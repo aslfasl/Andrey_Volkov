@@ -1,33 +1,22 @@
 package com.Volkov.service;
 
 import com.Volkov.db.entity.CarEntity;
-import com.Volkov.db.entity.DriverEntity;
 import com.Volkov.db.repo.CarRepository;
 import com.Volkov.dto.CarDto;
-import com.Volkov.dto.DriverDto;
+import com.Volkov.dto.Converter;
 import com.Volkov.exceptions.InsuranceException;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.exceptions.ObjectNotFoundException;
-import com.Volkov.service.CarService;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.apache.tomcat.jni.Local;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class CarServiceTest {
-
-    ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private CarRepository carRepositoryTest;
@@ -41,44 +30,52 @@ class CarServiceTest {
     }
 
     @Test
-    void DTOtest() throws InsuranceException {
-        ObjectMapper objectMapper = JsonMapper.builder()
-                .findAndAddModules()
-                .build();
-        CarEntity carEntity = new CarEntity("aaa", "bmw", "green", true);
-        DriverEntity driverEntity = new DriverEntity("testDriver", LocalDate.of(2000, 1, 1));
-        driverEntity.addNewCar(carEntity);
-        System.out.println(carEntity.getOwner());
-        System.out.println(carEntity);
-        CarDto carDto = objectMapper.convertValue(carEntity, new TypeReference<>() {
-        });
-        DriverDto driverDto = objectMapper.convertValue(driverEntity, new TypeReference<DriverDto>() {
-        });
-        System.out.println(driverDto);
-        System.out.println(carDto);
-    }
-
-    @Test
     void shouldGetCarByCarId() throws ObjectNotFoundException {
-        CarEntity car = new CarEntity();
+        CarEntity car = new com.Volkov.db.entity.CarEntity();
         car.setColor("black");
         car.setModel("record");
         car.setInsurance(true);
         car.setRegistrationNumber("a100");
-
         carRepositoryTest.save(car);
         int carId = car.getCarId();
-        CarEntity carInDatabase = carServiceTest.getCarById(carId);
-        assertEquals(car, carInDatabase);
+
+        CarDto carDto = carServiceTest.getCarById(carId);
+
+        assertEquals(car.getRegistrationNumber(), carDto.getRegistrationNumber());
+        assertEquals(car.getColor(), carDto.getColor());
+        assertEquals(car.getModel(), carDto.getModel());
     }
 
     @Test
     void shouldThrowObjectNotFoundExceptionAfterGetCarById() throws ObjectNotFoundException {
-        CarEntity car = new CarEntity();
+        CarEntity car = new com.Volkov.db.entity.CarEntity();
         carRepositoryTest.save(car);
 
         ObjectNotFoundException thrown = assertThrows(ObjectNotFoundException.class,
                 () -> carServiceTest.getCarById(2));
+
+        assertEquals("Car not found", thrown.getMessage());
+    }
+
+    @Test
+    void shouldGetCarByRegNumber() throws ObjectNotFoundException {
+        String regNumber = "aaa";
+        CarEntity carEntity = new CarEntity(regNumber, "toyota", "blue", false);
+        carRepositoryTest.save(carEntity);
+
+        CarDto carDto = carServiceTest.getCarByRegistrationNumber(regNumber);
+
+        assertEquals(carEntity.getRegistrationNumber(), carDto.getRegistrationNumber());
+        assertEquals(carEntity.getColor(), carDto.getColor());
+        assertEquals(carEntity.getModel(), carDto.getModel());
+    }
+
+    @Test
+    void shouldThrowObjectNotFoundExceptionWhenGetCarByRegNumber() throws ObjectNotFoundException {
+        String regNumber = "aaa";
+
+        ObjectNotFoundException thrown = assertThrows(ObjectNotFoundException.class,
+                () -> carServiceTest.getCarByRegistrationNumber(regNumber));
 
         assertEquals("Car not found", thrown.getMessage());
     }
@@ -89,7 +86,6 @@ class CarServiceTest {
         String model = "pajero";
         String color = "blue";
         boolean insurance = true;
-        CarEntity car = new CarEntity(regNumber, model, color, insurance);
 
         assertFalse(carRepositoryTest.existsCarByRegistrationNumber(regNumber));
         carServiceTest.addNewCar(regNumber, model, color, insurance);
@@ -111,27 +107,28 @@ class CarServiceTest {
     @Test
     void shouldAddCarToDatabase() throws ObjectAlreadyExistsException {
         String regNumber = "add2";
-        CarEntity car = new CarEntity(regNumber, "opel", "black", true);
+        CarDto carDto = new CarDto(regNumber, "opel", "black", true, null);
         assertFalse(carRepositoryTest.existsCarByRegistrationNumber(regNumber));
-        carServiceTest.addCar(car);
+        carServiceTest.addCar(carDto);
         assertTrue(carRepositoryTest.existsCarByRegistrationNumber(regNumber));
     }
 
     @Test
     void shouldThrowObjectAlreadyExistsExceptionWhenAddCar() {
-        CarEntity car = new CarEntity();
-        car.setRegistrationNumber("test");
-        carRepositoryTest.save(car);
+        CarEntity carEntity = new CarEntity();
+        carEntity.setRegistrationNumber("test");
+        carRepositoryTest.save(carEntity);
+        CarDto carDto = Converter.convertValue(carEntity, CarDto.class);
 
         ObjectAlreadyExistsException exception = assertThrows(ObjectAlreadyExistsException.class, () ->
-                carServiceTest.addCar(car));
+                carServiceTest.addCar(carDto));
 
         assertEquals("Car with the same registration number already exists", exception.getMessage());
     }
 
 
     @Test
-    void shouldDeleteCarById() {
+    void shouldDeleteCarByRegNumber() {
         String regNumber = "z001";
         CarEntity car = new CarEntity(regNumber, "model", "color", true);
         carRepositoryTest.save(car);
@@ -139,6 +136,17 @@ class CarServiceTest {
         assertTrue(carRepositoryTest.existsCarByRegistrationNumber(regNumber));
         carServiceTest.deleteCarByRegistrationNumber(regNumber);
         assertFalse(carRepositoryTest.existsCarByRegistrationNumber(regNumber));
+    }
+
+    @Test
+    void shouldDeleteCarById(){
+        CarEntity car = new CarEntity("number", "model", "color", true);
+        carRepositoryTest.save(car);
+        int carId = car.getCarId();
+
+        assertTrue(carRepositoryTest.existsById(carId));
+        carServiceTest.deleteCarById(carId);
+        assertFalse(carRepositoryTest.existsById(carId));
     }
 
     @Test

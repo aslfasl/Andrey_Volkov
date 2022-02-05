@@ -1,16 +1,13 @@
 package com.Volkov.rest;
 
-import com.Volkov.db.entity.CarEntity;
 import com.Volkov.db.entity.DriverEntity;
-import com.Volkov.exceptions.InsuranceException;
+import com.Volkov.dto.CarDto;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.exceptions.ObjectNotFoundException;
 import com.Volkov.exceptions.WrongAgeException;
 import com.Volkov.service.DriverService;
 import com.Volkov.service.CarService;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -44,7 +41,7 @@ public class DriverCarController {
     }
 
     @PostMapping("/create_car")
-    public ResponseEntity<CarEntity> createCar(
+    public ResponseEntity<com.Volkov.db.entity.CarEntity> createCar(
             @RequestParam String carId,
             @RequestParam String model,
             @RequestParam String color,
@@ -76,22 +73,22 @@ public class DriverCarController {
     }
 
     @PostMapping("/add_car")
-    public ResponseEntity<CarEntity> addCarToDatabase(@RequestBody CarEntity carEntity) {
+    public ResponseEntity<CarDto> addCarToDatabase(@RequestBody CarDto carDto) {
         HttpHeaders headers = new HttpHeaders();
-        if (carEntity == null) {
+        if (carDto == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         try {
-            carService.addCar(carEntity);
+            carService.addCar(carDto);
         } catch (ObjectAlreadyExistsException e) {
             e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(carEntity, headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(carDto, headers, HttpStatus.CREATED);
     }
 
     @GetMapping("/get_driver_cars/{driverId}")
-    public ResponseEntity<List<CarEntity>> getDriverCars(@PathVariable int driverId) {
+    public ResponseEntity<List<com.Volkov.db.entity.CarEntity>> getDriverCars(@PathVariable int driverId) {
         try {
             return new ResponseEntity<>(driverService.getDriverById(driverId).getCars(), HttpStatus.OK);
         } catch (ObjectNotFoundException e) {

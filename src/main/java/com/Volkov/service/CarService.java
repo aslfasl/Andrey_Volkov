@@ -3,6 +3,7 @@ package com.Volkov.service;
 import com.Volkov.db.entity.CarEntity;
 import com.Volkov.db.repo.CarRepository;
 import com.Volkov.dto.CarDto;
+import com.Volkov.dto.Converter;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.exceptions.ObjectNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -41,26 +41,20 @@ public class CarService {
 
     }
 
-    public Page<CarEntity> findCarsWithSortAndPagination(int offset, int pageSize, String field) {
-        Page<CarEntity> cars = carRepository.findAll(PageRequest.of(offset, pageSize)
-                .withSort(Sort.by(Sort.Direction.ASC, field)));
-        return cars;
+    public CarDto getCarByRegistrationNumber(String regNumber) throws ObjectNotFoundException {
+        CarEntity carEntity = carRepository.getCarEntityByRegistrationNumber(regNumber);
+        if (carEntity == null) {
+            throw new ObjectNotFoundException("Car not found");
+        }
+        return Converter.convertValue(carEntity, CarDto.class);
+
     }
 
-//    public CarDto getCarByRegistrationNumber(String regNumber) throws ObjectNotFoundException {
-//        CarEntity car = carRepository.getCarEntityByRegistrationNumber(regNumber);
-//        if (car == null) {
-//            throw new ObjectNotFoundException("Car not found");
-//        }
-//        return modelMapper.map(car, CarDto.class);
-//
-//    }
-
-
-    public CarEntity getCarById(int carId) throws ObjectNotFoundException {
+    public CarDto getCarById(int carId) throws ObjectNotFoundException {
         Optional<CarEntity> carOptional = carRepository.findById(carId);
         if (carOptional.isPresent()) {
-            return carOptional.get();
+            CarEntity carEntity = carOptional.get();
+            return Converter.convertValue(carEntity, CarDto.class);
         }
         throw new ObjectNotFoundException("Car not found");
     }
@@ -75,9 +69,10 @@ public class CarService {
         }
     }
 
-    public void addCar(CarEntity car) throws ObjectAlreadyExistsException {
-        if (!carRepository.existsCarByRegistrationNumber(car.getRegistrationNumber())) {
-            carRepository.save(car);
+    public void addCar(CarDto carDto) throws ObjectAlreadyExistsException {
+        CarEntity carEntity = Converter.convertValue(carDto, CarEntity.class);
+        if (!carRepository.existsCarByRegistrationNumber(carEntity.getRegistrationNumber())) {
+            carRepository.save(carEntity);
         } else {
             throw new ObjectAlreadyExistsException("Car with the same registration number already exists");
         }
@@ -85,6 +80,10 @@ public class CarService {
 
     public void deleteCarByRegistrationNumber(String regNumber) {
         carRepository.deleteByRegistrationNumber(regNumber);
+    }
+
+    public void deleteCarById(int carId) {
+        carRepository.deleteById(carId);
     }
 
     public void updateCarByRegistrationNumber(String regNumber, String newModel, String newColor) {
@@ -98,5 +97,11 @@ public class CarService {
             car.setColor(newColor);
         }
         carRepository.save(car);
+    }
+
+    public Page<CarEntity> findCarsWithSortAndPagination(int offset, int pageSize, String field) {
+        Page<CarEntity> cars = carRepository.findAll(PageRequest.of(offset, pageSize)
+                .withSort(Sort.by(Sort.Direction.ASC, field)));
+        return cars;
     }
 }
