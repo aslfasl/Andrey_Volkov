@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class DriverCarControllerTest {
+class DriverControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -78,15 +78,6 @@ class DriverCarControllerTest {
         assertEquals(201, status);
     }
 
-    @Test
-    void shouldCreateCarWithRequestedParams() throws Exception {
-        int status = mockMvc.perform((post("/controller/create_car?carId=xxx&model=suzuki&color=blue&insurance=true")))
-                .andReturn()
-                .getResponse()
-                .getStatus();
-
-        assertEquals(201, status);
-    }
 
     @Test
     void shouldCreateDriverWithRequestedParams() throws Exception {
@@ -99,20 +90,7 @@ class DriverCarControllerTest {
         assertEquals(201, status);
     }
 
-    @Test
-    void shouldAddNewCarToDatabase() throws Exception {
-        CarEntity carEntity =
-                new CarEntity("x9", "niva", "blue", true);
 
-        int status = mockMvc.perform((post("/controller/add_car"))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(carEntity)))
-                .andReturn()
-                .getResponse()
-                .getStatus();
-
-        assertEquals(201, status);
-    }
 
 //    @Test
 //    void shouldGetDriverCarsByDriverId() throws Exception {
@@ -161,19 +139,7 @@ class DriverCarControllerTest {
 ////        assertEquals(driversCarEntity.getOwnerId(), driverEntity.getDriverId());
 ////    }
 //
-//    @Test
-//    void shouldGetCarByCarId() throws Exception {
-//        String result = this.mockMvc.perform(get("/controller/car_by_Id?carId=a1"))
-//                .andExpect(status().isOk())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//
-//        CarEntity carEntity = objectMapper.readValue(result, CarEntity.class);
-//
-//        assertEquals("a1", carEntity.getCarId());
-//
-//    }
+
 //
 //    @Test
 //    void shouldDeleteDriverByDriverId() throws Exception {
@@ -182,11 +148,7 @@ class DriverCarControllerTest {
 //
 //    }
 //
-//    @Test
-//    void shouldDeleteCarByCarId() throws Exception {
-//        this.mockMvc.perform(delete("/controller/delete_car/c3"))
-//                .andExpect(status().isNoContent());
-//    }
+
 //
 //    @Test
 //    void shouldUpdateDriverByDriverId() throws Exception {
@@ -195,11 +157,7 @@ class DriverCarControllerTest {
 //
 //    }
 //
-//    @Test
-//    void shouldUpdateCarByCarId() throws Exception {
-//        mockMvc.perform(patch("/controller/update_car?carId=A1&model=Andrey&color=Yellow&ownerId=22"))
-//                .andExpect(status().isOk());
-//    }
+
 //
 ////    @Test
 ////    void shouldAddCarToAllCars() throws Exception {

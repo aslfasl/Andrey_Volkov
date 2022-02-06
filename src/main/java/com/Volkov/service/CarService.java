@@ -11,7 +11,11 @@ import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.annotation.PostConstruct;
 
@@ -62,13 +66,13 @@ public class CarService {
     }
 
 
-    public void addNewCar(String regNumber, String model, String color, boolean insurance) throws ObjectAlreadyExistsException {
+    public CarDto addNewCar(String regNumber, String model, String color, boolean insurance) throws ObjectAlreadyExistsException {
         CarEntity car = new CarEntity(regNumber, model, color, insurance);
-        if (!carRepository.existsCarByRegistrationNumber(regNumber)) {
-            carRepository.save(car);
-        } else {
+        if (carRepository.existsCarByRegistrationNumber(regNumber)) {
             throw new ObjectAlreadyExistsException("Car with the same registration number already exists");
         }
+        carRepository.save(car);
+        return Converter.convertValue(car, CarDto.class);
     }
 
     public void addCar(CarDto carDto) throws ObjectAlreadyExistsException {
@@ -88,7 +92,7 @@ public class CarService {
         carRepository.deleteById(carId);
     }
 
-    public void updateCarByRegistrationNumber(String regNumber, String newModel, String newColor) {
+    public CarDto updateCarByRegistrationNumber(String regNumber, String newModel, String newColor) {
 
         CarEntity car = carRepository.getCarEntityByRegistrationNumber(regNumber);
 
@@ -99,9 +103,10 @@ public class CarService {
             car.setColor(newColor);
         }
         carRepository.save(car);
+        return Converter.convertValue(car, CarDto.class);
     }
 
-    public List<CarDto> getAllCars(){
+    public List<CarDto> getAllCars() {
         return carRepository.findAll()
                 .stream()
                 .map(carEntity -> Converter.convertValue(carEntity, CarDto.class))
@@ -113,4 +118,5 @@ public class CarService {
                 .withSort(Sort.by(Sort.Direction.ASC, field)));
         return cars;
     }
+
 }

@@ -1,10 +1,8 @@
 package com.Volkov.rest;
 
 import com.Volkov.db.entity.DriverEntity;
-import com.Volkov.dto.CarDto;
 import com.Volkov.dto.DriverDto;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
-import com.Volkov.exceptions.ObjectNotFoundException;
 import com.Volkov.exceptions.WrongAgeException;
 import com.Volkov.service.DriverService;
 import com.Volkov.service.CarService;
@@ -16,12 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("controller")
 @AllArgsConstructor
-public class DriverCarController {
+public class DriverController {
 
     private DriverService driverService;
     private CarService carService;
@@ -41,22 +38,7 @@ public class DriverCarController {
         return new ResponseEntity<>(driverDto, headers, HttpStatus.CREATED);
     }
 
-    @PostMapping("/create_car")
-    public ResponseEntity<com.Volkov.db.entity.CarEntity> createCar(
-            @RequestParam String carId,
-            @RequestParam String model,
-            @RequestParam String color,
-            @RequestParam(required = false, defaultValue = "false") boolean insurance) {
-        HttpHeaders headers = new HttpHeaders();
-        try {
-            carService.addNewCar(carId, model, color, insurance);
-        } catch (ObjectAlreadyExistsException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
 
-        return new ResponseEntity<>(headers, HttpStatus.CREATED);
-    }
 
     @PostMapping("/create_driver")
     public ResponseEntity<DriverEntity> createDriver(
@@ -71,21 +53,6 @@ public class DriverCarController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/add_car")
-    public ResponseEntity<CarDto> addCarToDatabase(@RequestBody CarDto carDto) {
-        HttpHeaders headers = new HttpHeaders();
-        if (carDto == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        try {
-            carService.addCar(carDto);
-        } catch (ObjectAlreadyExistsException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(carDto, headers, HttpStatus.CREATED);
     }
 
 //    @GetMapping("/get_driver_cars/{driverId}")
@@ -108,15 +75,7 @@ public class DriverCarController {
 ////        }
 ////    }
 ////
-////    @GetMapping("/car_by_Id")
-////    public ResponseEntity<CarEntity> getCar(@RequestParam String carId) {
-////        try {
-////            return new ResponseEntity<>(carService.getCarById(carId), HttpStatus.OK);
-////        } catch (ObjectNotFoundException e) {
-////            e.printStackTrace();
-////            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-////        }
-////    }
+
 //
 //    @DeleteMapping("/delete_driver/{driverId}")
 //    public ResponseEntity<DriverEntity> deleteDriver(@PathVariable int driverId) {
@@ -129,18 +88,7 @@ public class DriverCarController {
 //        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 //    }
 //
-////    @DeleteMapping("/delete_car/{carId}")
-////    public ResponseEntity<CarEntity> deleteCarById(@PathVariable String carId) {
-////        try {
-////            CarEntity carEntity = carService.getCarById(carId);
-////            driverService.getDriverByCarId(carId).getCarEntityList().remove(carEntity);
-////            carService.deleteCarById(carId);
-////        } catch (ObjectNotFoundException e) {
-////            e.printStackTrace();
-////            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-////        }
-////        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-////    }
+
 //
 //    @PatchMapping("/update_driver")
 //    public ResponseEntity<DriverEntity> updateDriver(
@@ -158,18 +106,7 @@ public class DriverCarController {
 //        return new ResponseEntity<>(HttpStatus.OK);
 //    }
 //
-////    @PatchMapping("/update_car")
-////    public ResponseEntity<CarEntity> updateCar(@RequestParam String carId,
-////                                               @RequestParam(required = false) String model,
-////                                               @RequestParam(required = false) String color) {
-////        try {
-////            carService.updateCarById(carId, model, color);
-////        } catch (ObjectNotFoundException e) {
-////            e.printStackTrace();
-////            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-////        }
-////        return new ResponseEntity<>(HttpStatus.OK);
-////    }
+
 //
 //    @PatchMapping("/add_car_to_driver")
 //    public ResponseEntity<CarEntity> addNewCarToDriver(@RequestParam int driverId, @RequestParam CarEntity carEntity) {
@@ -187,9 +124,6 @@ public class DriverCarController {
 //        return new ResponseEntity<>(driverService., HttpStatus.FOUND); // FIND ALL
 //    }
 //
-//    @GetMapping("/get_all_cars")
-//    public ResponseEntity<List<CarEntity>> getAllCars() {
-//        return new ResponseEntity<>(carService.getAllCarEntities(), HttpStatus.FOUND);
-//    }
+
 //
 }
