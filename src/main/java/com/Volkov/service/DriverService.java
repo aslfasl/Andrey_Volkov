@@ -11,12 +11,9 @@ import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.exceptions.ObjectNotFoundException;
 import com.Volkov.exceptions.WrongAgeException;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -68,11 +65,12 @@ public class DriverService {
         driverRepository.save(driverEntity);
     }
 
-    public void addNewDriver(String name, LocalDate birthDate) throws WrongAgeException {
+    public DriverDto addNewDriver(String name, LocalDate birthDate) throws WrongAgeException {
         DriverEntity newDriver = new DriverEntity(name, birthDate);
         if (ValidationService.driverAgeCheck(birthDate)) {
             driverRepository.save(newDriver);
         }
+        return Converter.convertValue(newDriver, DriverDto.class);
     }
 
     @Transactional(readOnly = true)

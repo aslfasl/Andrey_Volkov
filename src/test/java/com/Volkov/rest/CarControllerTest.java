@@ -30,7 +30,7 @@ class CarControllerTest {
     @Autowired
     private CarService carService;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void shouldCreateCarWithRequestedParams() throws Exception {

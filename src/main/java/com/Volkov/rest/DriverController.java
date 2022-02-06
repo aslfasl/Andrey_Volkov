@@ -1,6 +1,7 @@
 package com.Volkov.rest;
 
 import com.Volkov.db.entity.DriverEntity;
+import com.Volkov.dto.CarDto;
 import com.Volkov.dto.DriverDto;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.exceptions.WrongAgeException;
@@ -14,69 +15,54 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
-@RequestMapping("controller")
+@RequestMapping("drivers")
 @AllArgsConstructor
 public class DriverController {
 
-    private DriverService driverService;
-    private CarService carService;
+    private DriverService service;
 
-    @PostMapping("/add_driver")
+
+    @PostMapping("/add")
     public ResponseEntity<DriverDto> addDriverToDatabase(@RequestBody DriverDto driverDto) {
         HttpHeaders headers = new HttpHeaders();
         if (driverDto == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         try {
-            driverService.addDriver(driverDto);
+            service.addDriver(driverDto);
+            return new ResponseEntity<>(driverDto, headers, HttpStatus.CREATED);
         } catch (WrongAgeException | ObjectAlreadyExistsException e) {
-            e.printStackTrace();
             return new ResponseEntity<>(driverDto, headers, HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(driverDto, headers, HttpStatus.CREATED);
     }
 
-
-
-    @PostMapping("/create_driver")
-    public ResponseEntity<DriverEntity> createDriver(
+    @PostMapping("/create")
+    public ResponseEntity<DriverDto> createDriver(
             @RequestParam String name,
             @RequestParam
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthDate) {
         HttpHeaders headers = new HttpHeaders();
         try {
-            driverService.addNewDriver(name, birthDate);
+            DriverDto driverDto = service.addNewDriver(name, birthDate);
+            return new ResponseEntity<>(driverDto, headers, HttpStatus.CREATED);
         } catch (WrongAgeException e) {
-            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
-//    @GetMapping("/get_driver_cars/{driverId}")
-//    public ResponseEntity<List<CarDto>> getDriverCars(@PathVariable int driverId) {
-//        try {
-//            return new ResponseEntity<>(driverService.getDriverById(driverId).getCars(), HttpStatus.OK);
-//        } catch (ObjectNotFoundException e) {
-//            e.printStackTrace();
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//    }
+    @GetMapping("/get_cars/{driverId}")
+    public ResponseEntity<List<CarDto>> getDriverCars(@PathVariable int driverId) {
+        return new ResponseEntity<>(service.getDriverCarsByDriverId(driverId), HttpStatus.OK);
+    }
 
-////    @GetMapping("/driver_by_carId")
-////    public ResponseEntity<DriverEntity> getDriver(@RequestParam String carId) {
-////        try {
-////            return new ResponseEntity<>(driverService.getDriverByCarId(carId), HttpStatus.OK);
-////        } catch (ObjectNotFoundException e) {
-////            e.printStackTrace();
-////            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-////        }
-////    }
-////
+    @GetMapping("/get_by_regNumber")
+    public ResponseEntity<DriverDto> getDriver(@RequestParam String regNumber) {
+        return new ResponseEntity<>(service.getDriverByCarRegistrationNumber(regNumber), HttpStatus.OK);
+    }
 
-//
 //    @DeleteMapping("/delete_driver/{driverId}")
 //    public ResponseEntity<DriverEntity> deleteDriver(@PathVariable int driverId) {
 //        try {

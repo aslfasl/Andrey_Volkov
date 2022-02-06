@@ -4,6 +4,9 @@ import com.Volkov.db.entity.CarEntity;
 import com.Volkov.db.entity.DriverEntity;
 import com.Volkov.db.repo.CarRepository;
 import com.Volkov.db.repo.DriverRepository;
+import com.Volkov.dto.CarDto;
+import com.Volkov.dto.DriverDto;
+import com.Volkov.service.DriverService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +31,9 @@ class DriverControllerTest {
     private MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
-//    @Autowired
-//    DriverRepository driverRepositoryTest;
-//    @Autowired
-//    CarRepository carRepositoryTest;
-//
+    @Autowired
+    DriverService driverService;
+
 ////    @BeforeEach
 ////    public void setUp() {
 ////        DriverEntity testDriver1Entity = new DriverEntity(1,"First Driver", LocalDate.of(2000, 1, 2));
@@ -68,7 +69,7 @@ class DriverControllerTest {
         DriverEntity driverEntity =
                 new DriverEntity("Peter", LocalDate.of(1995, 1, 5));
 
-        int status = mockMvc.perform((post("/controller/add_driver"))
+        int status = mockMvc.perform((post("/drivers/add"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(driverEntity)))
                 .andReturn()
@@ -81,64 +82,56 @@ class DriverControllerTest {
 
     @Test
     void shouldCreateDriverWithRequestedParams() throws Exception {
-        int status =
-                mockMvc.perform((post("/controller/create_driver?driverId=1000&name=Lee&birthDate=1999-02-02")))
+        String content =
+                mockMvc.perform((post("/drivers/create?name=Lee&birthDate=1999-02-02")))
+                        .andExpect(status().isCreated())
                         .andReturn()
                         .getResponse()
-                        .getStatus();
+                        .getContentAsString();
 
-        assertEquals(201, status);
+        DriverDto driverDto = objectMapper.readValue(content, DriverDto.class);
+
+        assertEquals("Lee", driverDto.getName());
     }
 
 
+    @Test
+    void shouldGetDriverCarsByDriverId() throws Exception {
+        DriverDto driverDto = new DriverDto("Bob", LocalDate.of(2000,1,1));
+        CarDto car1 = new CarDto("zaz", "opel", "green", true, null);
+        CarDto car2 = new CarDto("cca", "renault", "brown", true, null);
+        driverService.addDriver(driverDto);
+        driverService.addCarToDriverByDriverId(car1, 1);
+        driverService.addCarToDriverByDriverId(car2, 1);
 
-//    @Test
-//    void shouldGetDriverCarsByDriverId() throws Exception {
-        //DOING
-//        System.out.println(mockMvc.perform(get("/controller/get_driver_cars/1"))
-//                .andExpect(status().isOk())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString());
-//
-//
-//        DriverEntity driver = new DriverEntity("TestDriver", LocalDate.of(2000, 1, 1));
-//        CarEntity car1 = new CarEntity("a1", "lada", "white", true);
-//        CarEntity car2 = new CarEntity("b2", "opel", "black", true);
-//        driver.addNewCar(car1);
-//        driver.addNewCar(car2);
-//        driverRepositoryTest.save(driver);
-//        System.out.println(driverRepositoryTest.findDriverWithCarsById(1));
-//
-//        String contentAsString = mockMvc.perform(get("/controller/get_driver_cars/1"))
-//                .andExpect(status().isOk())
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//
-//        List<CarEntity> carEntityList = Arrays.asList(objectMapper.readValue(contentAsString, CarEntity[].class));
-//
-//        assertEquals(1, carEntityList.stream()
-//                .findAny()
-//                .get());
-//    }
 
-////    @Test
-////    void shouldGetDriverByCarId() throws Exception {
-////        String contentAsString = mockMvc.perform(get("/controller/driver_by_carId?carId=B2"))
-////                .andExpect(status().isOk())
-////                .andReturn()
-////                .getResponse()
-////                .getContentAsString();
-////
-////        DriverEntity driverEntity = objectMapper.readValue(contentAsString, DriverEntity.class);
-////
-////        CarEntity driversCarEntity = driverEntity.getCarEntityList()
-////                .stream()
-////                .findAny().get();
-////        assertEquals(driversCarEntity.getOwnerId(), driverEntity.getDriverId());
-////    }
-//
+        String content = mockMvc.perform(get("/drivers/get_cars/1"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        List<CarDto> cars = Arrays.asList(objectMapper.readValue(content, CarDto[].class));
+        assertEquals(car1, cars.get(0));
+        assertEquals(car2.getRegistrationNumber(), cars.get(1).getRegistrationNumber());
+    }
+
+    @Test
+    void shouldGetDriverByCarRegNumber() throws Exception {
+        DriverDto driver = new DriverDto("Bill", LocalDate.of(2000, 1, 1));
+        driverService.addDriver(driver);
+        CarDto carDto = new CarDto("qqq", "test", "test", true, null);
+        driverService.addCarToDriverByDriverId(carDto,1);
+
+        String contentAsString = mockMvc.perform(get("/drivers/get_by_regNumber?regNumber=qqq"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        DriverDto driverDto = objectMapper.readValue(contentAsString, DriverDto.class);
+        assertEquals("qqq", driverService.getDriverCarsByDriverId(1).get(0).getRegistrationNumber());
+    }
 
 //
 //    @Test
@@ -158,7 +151,7 @@ class DriverControllerTest {
 //    }
 //
 
-//
+    //
 ////    @Test
 ////    void shouldAddCarToAllCars() throws Exception {
 ////        CarEntity carEntity = new CarEntity("zzz214", "kia", "brown", true);
