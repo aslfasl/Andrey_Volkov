@@ -3,7 +3,9 @@ package com.Volkov.rest;
 import com.Volkov.db.entity.DriverEntity;
 import com.Volkov.dto.CarDto;
 import com.Volkov.dto.DriverDto;
+import com.Volkov.exceptions.InsuranceException;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
+import com.Volkov.exceptions.ObjectNotFoundException;
 import com.Volkov.exceptions.WrongAgeException;
 import com.Volkov.service.DriverService;
 import com.Volkov.service.CarService;
@@ -63,53 +65,49 @@ public class DriverController {
         return new ResponseEntity<>(service.getDriverByCarRegistrationNumber(regNumber), HttpStatus.OK);
     }
 
-//    @DeleteMapping("/delete_driver/{driverId}")
-//    public ResponseEntity<DriverEntity> deleteDriver(@PathVariable int driverId) {
-//        try {
-//            driverService.deleteDriverById(driverId);
-//        } catch (ObjectNotFoundException e) {
-//            e.printStackTrace();
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
-//
+    @GetMapping("/get_all")
+    public ResponseEntity<List<DriverDto>> getAllDrivers() {
+        return new ResponseEntity<>(service.getAllDrivers(), HttpStatus.OK);
+    }
 
-//
-//    @PatchMapping("/update_driver")
-//    public ResponseEntity<DriverEntity> updateDriver(
-//            @RequestParam int driverId,
-//            @RequestParam(value = "name", required = false) String newName,
-//            @RequestParam(value = "localDate", required = false)
-//            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate newBirthDate) {
-//
-//        try {
-//            driverService.updateDriverById(driverId, newName, newBirthDate);
-//        } catch (ObjectNotFoundException e) {
-//            e.printStackTrace();
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
-//
+    @GetMapping("/get_by_id/{driverId}")
+    public ResponseEntity<DriverDto> getDriverById(@PathVariable int driverId) {
+        try {
+            DriverDto driverDto = service.getDriverById(driverId);
+            return new ResponseEntity<>(driverDto, HttpStatus.OK);
+        } catch (ObjectNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 
-//
-//    @PatchMapping("/add_car_to_driver")
-//    public ResponseEntity<CarEntity> addNewCarToDriver(@RequestParam int driverId, @RequestParam CarEntity carEntity) {
-//        try {
-//            driverService.addCarToDriverByDriverId(carEntity, driverId);
-//        } catch (ObjectNotFoundException e) {
-//            e.printStackTrace();
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/get_all_drivers")
-//    public ResponseEntity<List<DriverEntity>> getAllDrivers() {
-//        return new ResponseEntity<>(driverService., HttpStatus.FOUND); // FIND ALL
-//    }
-//
+    @DeleteMapping("/delete/{driverId}")
+    public ResponseEntity<DriverDto> deleteDriver(@PathVariable int driverId) {
+        service.deleteDriverById(driverId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
-//
+    @PatchMapping("/update")
+    public ResponseEntity<DriverDto> updateDriver(
+            @RequestParam int driverId,
+            @RequestParam(value = "name", required = false) String newName,
+            @RequestParam(value = "localDate", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate newBirthDate) {
+        try {
+            DriverDto driverDto = service.updateDriverById(driverId, newName, newBirthDate);
+            return new ResponseEntity<>(driverDto, HttpStatus.OK);
+        } catch (ObjectNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @PostMapping("/add_car")
+    public ResponseEntity<CarDto> addNewCarToDriver(@RequestParam int driverId, @RequestBody CarDto carDto)
+            throws InsuranceException {
+        try {
+            service.addCarToDriverByDriverId(carDto, driverId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (ObjectAlreadyExistsException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }

@@ -19,6 +19,7 @@ public interface CarRepository extends JpaRepository<CarEntity, Integer> {
 
     CarEntity getCarEntityByRegistrationNumber(String registrationNumber);
 
+
 //    @Modifying
 //    @Query("UPDATE CarEntity c SET c.color = ?2, c.model = ?3 WHERE c.registrationNumber = ?1")
 //    void setCarParametersByRegistrationNumber(String registrationNumber, String color, String model);

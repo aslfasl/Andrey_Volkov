@@ -6,14 +6,20 @@ import com.Volkov.db.repo.CarRepository;
 import com.Volkov.db.repo.DriverRepository;
 import com.Volkov.dto.CarDto;
 import com.Volkov.dto.DriverDto;
+import com.Volkov.exceptions.ObjectNotFoundException;
 import com.Volkov.service.DriverService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -33,45 +39,27 @@ class DriverControllerTest {
     ObjectMapper objectMapper;
     @Autowired
     DriverService driverService;
+    @Autowired
+    DriverRepository driverRepository;
+    @Autowired
+    CarRepository carRepository;
 
-////    @BeforeEach
-////    public void setUp() {
-////        DriverEntity testDriver1Entity = new DriverEntity(1,"First Driver", LocalDate.of(2000, 1, 2));
-////        DriverEntity testDriver2Entity = new DriverEntity(
-////                2,"Second Driver", LocalDate.of(2000, 12, 31));
-////
-////        CarEntity testCar1Entity = new CarEntity("a1", "opel", "green", true);
-////        CarEntity testCar2Entity = new CarEntity("b2", "lada", "black", true);
-////        CarEntity testCar3Entity = new CarEntity("c3", "bmw", "white", true);
-////        CarEntity testCar4Entity = new CarEntity("d4", "jeep", "yellow", true);
-////
-////        driverCarController.getCarService().addCar(testCar1Entity);
-////        driverCarController.getCarService().addCar(testCar2Entity);
-////        driverCarController.getCarService().addCar(testCar3Entity);
-////        driverCarController.getCarService().addCar(testCar4Entity);
-////
-////        try {
-////            driverCarController.getDriverService().addDriver(testDriver1Entity);
-////            driverCarController.getDriverService().addDriver(testDriver2Entity);
-////        } catch (WrongAgeException e) {
-////            e.printStackTrace();
-////        }
-////
-////        testDriver1Entity.addNewCar(testCar1Entity);
-////        testDriver1Entity.addNewCar(testCar2Entity);
-////        testDriver2Entity.addNewCar(testCar3Entity);
-////        testDriver2Entity.addNewCar(testCar4Entity);
-////    }
 
+    @AfterEach
+    void tearDown() {
+        driverRepository.deleteAll();
+        carRepository.deleteAll();
+        driverRepository.resetSequence();
+    }
 
     @Test
     void shouldAddDriverToDatabase() throws Exception {
-        DriverEntity driverEntity =
-                new DriverEntity("Peter", LocalDate.of(1995, 1, 5));
+        DriverDto driverDto =
+                new DriverDto("Peter", LocalDate.of(1995, 1, 5));
 
         int status = mockMvc.perform((post("/drivers/add"))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(driverEntity)))
+                        .content(objectMapper.writeValueAsString(driverDto)))
                 .andReturn()
                 .getResponse()
                 .getStatus();
@@ -97,7 +85,7 @@ class DriverControllerTest {
 
     @Test
     void shouldGetDriverCarsByDriverId() throws Exception {
-        DriverDto driverDto = new DriverDto("Bob", LocalDate.of(2000,1,1));
+        DriverDto driverDto = new DriverDto("Bob", LocalDate.of(2000, 1, 1));
         CarDto car1 = new CarDto("zaz", "opel", "green", true, null);
         CarDto car2 = new CarDto("cca", "renault", "brown", true, null);
         driverService.addDriver(driverDto);
@@ -121,7 +109,7 @@ class DriverControllerTest {
         DriverDto driver = new DriverDto("Bill", LocalDate.of(2000, 1, 1));
         driverService.addDriver(driver);
         CarDto carDto = new CarDto("qqq", "test", "test", true, null);
-        driverService.addCarToDriverByDriverId(carDto,1);
+        driverService.addCarToDriverByDriverId(carDto, 1);
 
         String contentAsString = mockMvc.perform(get("/drivers/get_by_regNumber?regNumber=qqq"))
                 .andExpect(status().isOk())
@@ -133,64 +121,80 @@ class DriverControllerTest {
         assertEquals("qqq", driverService.getDriverCarsByDriverId(1).get(0).getRegistrationNumber());
     }
 
-//
-//    @Test
-//    void shouldDeleteDriverByDriverId() throws Exception {
-//        this.mockMvc.perform(delete("/controller/delete_driver/1"))
-//                .andExpect(status().isNoContent());
-//
-//    }
-//
-
-//
-//    @Test
-//    void shouldUpdateDriverByDriverId() throws Exception {
-//        mockMvc.perform(patch("/controller/update_driver?driverId=1&name=Andrey&localDate=1989-09-19"))
-//                .andExpect(status().isOk());
-//
-//    }
-//
-
-    //
-////    @Test
-////    void shouldAddCarToAllCars() throws Exception {
-////        CarEntity carEntity = new CarEntity("zzz214", "kia", "brown", true);
-////
-////        int status = this.mockMvc.perform(post("/controller/add_car?ownerId=1")
-////                        .contentType(MediaType.APPLICATION_JSON)
-////                        .content(objectMapper.writeValueAsString(carEntity)))
-////                .andReturn()
-////                .getResponse()
-////                .getStatus();
-////
-////        assertEquals(201, status);
-////
-////    }
-//
     @Test
-    void shouldGetAllDriversList() throws Exception {
-        String contentAsString = this.mockMvc.perform(get("/controller/get_all_drivers/"))
-                .andExpect(status().isFound())
+    void shouldGetDriverById() throws Exception {
+        DriverDto driver = new DriverDto("Bill", LocalDate.of(2000, 1, 1));
+        driverService.addDriver(driver);
+
+        String contentAsString = mockMvc.perform(get("/drivers/get_by_id/1"))
+                .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        List<DriverEntity> carList = Arrays.asList(objectMapper.readValue(contentAsString, DriverEntity[].class));
-
-        System.out.println(carList);
-        //        assertTrue(carList.contains(new DriverEntity(
-//                2, "Second Driver", LocalDate.of(2000, 12, 31))));
+        DriverDto driverDto = objectMapper.readValue(contentAsString, DriverDto.class);
+        assertEquals(driver.getName(), driverDto.getName());
+        assertEquals(driver.getBirthDate(), driverDto.getBirthDate());
     }
 
     @Test
-    void shouldGetAllCarsList() throws Exception {
-        String contentAsString = this.mockMvc.perform(get("/controller/get_all_cars"))
-                .andExpect(status().isFound())
+    void shouldGetAllDrivers() throws Exception {
+        DriverDto driverDto1 = new DriverDto("Bill", LocalDate.of(2000, 1, 1));
+        DriverDto driverDto2 = new DriverDto("Bob", LocalDate.of(2002, 2, 2));
+        driverService.addDriver(driverDto1);
+        driverService.addDriver(driverDto2);
+
+        String content = mockMvc.perform(get("/drivers/get_all"))
+                .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
+        List<DriverDto> drivers = Arrays.asList(objectMapper.readValue(content, DriverDto[].class));
 
-        List<CarEntity> carEntityList = Arrays.asList(objectMapper.readValue(contentAsString, CarEntity[].class));
-        System.out.println(carEntityList);
+        assertEquals(2, drivers.size());
+        assertEquals(driverDto1.getName(), drivers.get(0).getName());
+        assertEquals(driverDto2.getBirthDate(), drivers.get(1).getBirthDate());
+    }
+
+
+    @Test
+    void shouldDeleteDriverByDriverId() throws Exception {
+        DriverDto driverDto = new DriverDto("Bill", LocalDate.of(2000, 1, 1));
+        driverService.addDriver(driverDto);
+        assertTrue(driverService.getDriverById(1).getName().equalsIgnoreCase(driverDto.getName()));
+        this.mockMvc.perform(delete("/drivers/delete/1"))
+                .andExpect(status().isNoContent());
+
+        ObjectNotFoundException exception =
+                assertThrows(ObjectNotFoundException.class, () -> driverService.getDriverById(1));
+        assertEquals("Driver not found", exception.getMessage());
+    }
+
+    @Test
+    void shouldUpdateDriverByDriverId() throws Exception {
+        DriverDto driverDto = new DriverDto("Bill", LocalDate.of(2000, 1, 1));
+        driverService.addDriver(driverDto);
+
+        String content = mockMvc.perform(patch("/drivers/update?driverId=1&name=Andrey&localDate=1989-09-19"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        DriverDto driverPatched = objectMapper.readValue(content, DriverDto.class);
+
+        assertEquals("Andrey", driverPatched.getName());
+        assertEquals(LocalDate.of(1989, 9, 19), driverPatched.getBirthDate());
+    }
+
+    @Test
+    void shouldAddCarToDriverByDriverId() throws Exception {
+        DriverDto driverDto = new DriverDto("Bill", LocalDate.of(2000, 1, 1));
+        driverService.addDriver(driverDto);
+        CarDto carDto = new CarDto("test", "test", "test", true, null);
+
+        mockMvc.perform((post("/drivers/add_car?driverId=1"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(carDto)))
+                .andExpect(status().isOk());
     }
 }

@@ -87,7 +87,7 @@ public class DriverService {
         driverRepository.deleteById(driverId);
     }
 
-    public void updateDriverById(int driverId, String newName, LocalDate newBirthDate) {
+    public DriverDto updateDriverById(int driverId, String newName, LocalDate newBirthDate) throws ObjectNotFoundException {
         Optional<DriverEntity> driverEntityOptionalOpt = driverRepository.findById(driverId);
         if (driverEntityOptionalOpt.isPresent()){
             DriverEntity driver = driverEntityOptionalOpt.get();
@@ -97,10 +97,11 @@ public class DriverService {
             if (newBirthDate != null) {
                 driver.setBirthDate(newBirthDate);
             }
-
             driverRepository.save(driver);
+            return Converter.convertValue(driver, DriverDto.class);
+        } else {
+            throw new ObjectNotFoundException("Driver not found");
         }
-
     }
 
     public DriverDto getDriverByCarRegistrationNumber(String regNumber) {

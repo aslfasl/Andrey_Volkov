@@ -2,8 +2,10 @@ package com.Volkov.db.repo;
 
 import com.Volkov.db.entity.DriverEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDate;
@@ -32,4 +34,10 @@ public interface DriverRepository extends JpaRepository<DriverEntity, Integer> {
 
     @Query(value = "SELECT de FROM DriverEntity de LEFT JOIN FETCH de.cars ")
     List<DriverEntity> findAllDriversWithCars();
+
+    @Transactional
+    @Modifying
+    @Query(value = "ALTER SEQUENCE public.driver_entity_driver_id_seq RESTART WITH 1;",
+            nativeQuery = true)
+    void resetSequence();
 }
