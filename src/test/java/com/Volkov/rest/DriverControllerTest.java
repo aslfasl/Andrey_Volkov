@@ -10,16 +10,12 @@ import com.Volkov.exceptions.ObjectNotFoundException;
 import com.Volkov.service.DriverService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -40,16 +36,15 @@ class DriverControllerTest {
     @Autowired
     DriverService driverService;
     @Autowired
-    DriverRepository driverRepository;
+    DriverRepository driverRepositoryTest;
     @Autowired
-    CarRepository carRepository;
+    CarRepository carRepositoryTest;
 
 
     @AfterEach
     void tearDown() {
-        driverRepository.deleteAll();
-        carRepository.deleteAll();
-        driverRepository.resetSequence();
+        driverRepositoryTest.deleteAll();
+        carRepositoryTest.deleteAll();
     }
 
     @Test
@@ -85,22 +80,23 @@ class DriverControllerTest {
 
     @Test
     void shouldGetDriverCarsByDriverId() throws Exception {
-        DriverDto driverDto = new DriverDto("Bob", LocalDate.of(2000, 1, 1));
-        CarDto car1 = new CarDto("zaz", "opel", "green", true, null);
-        CarDto car2 = new CarDto("cca", "renault", "brown", true, null);
-        driverService.addDriver(driverDto);
-        driverService.addCarToDriverByDriverId(car1, 1);
-        driverService.addCarToDriverByDriverId(car2, 1);
+        DriverEntity driverEntity = new DriverEntity("Bob", LocalDate.of(2000, 1, 1));
+        CarEntity car1 = new CarEntity("zaz", "opel", "green", true);
+        CarEntity car2 = new CarEntity("cca", "renault", "brown", true);
+        driverEntity.addNewCar(car1);
+        driverEntity.addNewCar(car2);
+        driverRepositoryTest.save(driverEntity);
+        int driverId = driverEntity.getDriverId();
 
 
-        String content = mockMvc.perform(get("/drivers/get_cars/1"))
+        String content = mockMvc.perform(get("/drivers/get_cars/{driverId}", driverId))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
         List<CarDto> cars = Arrays.asList(objectMapper.readValue(content, CarDto[].class));
-        assertEquals(car1, cars.get(0));
+        assertEquals(car1.getRegistrationNumber(), cars.get(0).getRegistrationNumber());
         assertEquals(car2.getRegistrationNumber(), cars.get(1).getRegistrationNumber());
     }
 

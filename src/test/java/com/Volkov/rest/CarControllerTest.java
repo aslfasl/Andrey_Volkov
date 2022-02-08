@@ -1,11 +1,14 @@
 package com.Volkov.rest;
 
 import com.Volkov.db.entity.CarEntity;
+import com.Volkov.db.repo.CarRepository;
 import com.Volkov.dto.CarDto;
+import com.Volkov.dto.Converter;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.service.CarService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.checkerframework.checker.units.qual.A;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,8 +32,15 @@ class CarControllerTest {
 
     @Autowired
     private CarService carService;
+    @Autowired
+    private CarRepository carRepositoryTest;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @AfterEach
+    void tearDown() {
+        carRepositoryTest.deleteAll();
+    }
 
     @Test
     void shouldCreateCarWithRequestedParams() throws Exception {
@@ -60,34 +70,38 @@ class CarControllerTest {
 
     @Test
     void shouldGetCarByCarId() throws Exception {
-        CarDto carDto = new CarDto("asd", "volga", "black", true, null);
-        carService.addCar(carDto);
-        String result = this.mockMvc.perform(get("/cars/find_by_id?carId=1"))
+        CarEntity carEntity = new CarEntity("asd", "volga", "black", true);
+        carRepositoryTest.save(carEntity);
+        int carId = carEntity.getCarId();
+
+        String result = this.mockMvc.perform(get("/cars/find_by_id?carId={carId}", carId))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        CarEntity carEntity = objectMapper.readValue(result, CarEntity.class);
+        CarEntity requestedCar = objectMapper.readValue(result, CarEntity.class);
 
-        assertEquals(carDto.getRegistrationNumber(), carEntity.getRegistrationNumber());
-        assertEquals(carDto.getColor(), carEntity.getColor());
+        assertEquals(carEntity.getRegistrationNumber(), requestedCar.getRegistrationNumber());
+        assertEquals(carEntity.getColor(), requestedCar.getColor());
     }
 
     @Test
     void shouldGetCarByRegNumber() throws Exception {
-        CarDto carDto = new CarDto("asd", "volga", "black", true, null);
-        carService.addCar(carDto);
-        String result = this.mockMvc.perform(get("/cars/find_by_regNumber?regNumber=asd"))
+        CarEntity carEntity = new CarEntity("asd", "volga", "black", true);
+        carRepositoryTest.save(carEntity);
+        String regNumber = carEntity.getRegistrationNumber();
+
+        String result = this.mockMvc.perform(get("/cars/find_by_regNumber?regNumber={regNumber}", regNumber))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        CarEntity carEntity = objectMapper.readValue(result, CarEntity.class);
+        CarEntity requestedCar = objectMapper.readValue(result, CarEntity.class);
 
-        assertEquals(carDto.getRegistrationNumber(), carEntity.getRegistrationNumber());
-        assertEquals(carDto.getColor(), carEntity.getColor());
+        assertEquals(carEntity.getRegistrationNumber(), requestedCar.getRegistrationNumber());
+        assertEquals(carEntity.getColor(), requestedCar.getColor());
     }
 
     @Test
@@ -108,9 +122,12 @@ class CarControllerTest {
 
     @Test
     void shouldUpdateCarByRegNumber() throws Exception {
-        carService.addCar(new CarDto("a1", null, null, true, null));
+        String regNumber = "a";
+        CarEntity carEntity = new CarEntity(regNumber, "test", "test", true);
+        carRepositoryTest.save(carEntity);
 
-        String content = mockMvc.perform(patch("/cars/update?regNumber=a1&model=bmw&color=yellow"))
+        String content = mockMvc.perform(patch(
+                "/cars/update?regNumber={regNumber}&model=bmw&color=yellow", regNumber))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -120,16 +137,18 @@ class CarControllerTest {
 
         assertEquals("yellow", carDto.getColor());
         assertEquals("bmw", carDto.getModel());
-        assertEquals("a1", carDto.getRegistrationNumber());
+        assertEquals(regNumber, carDto.getRegistrationNumber());
     }
 
     @Test
     void shouldDeleteCarByCarId() throws Exception {
-        CarDto carDto = new CarDto("a1", null, null, true, null);
-        carService.addCar(carDto);
+        CarEntity carEntity = new CarEntity("a1", null, null, true);
+        carRepositoryTest.save(carEntity);
+        int carId = carEntity.getCarId();
+        CarDto carDto = objectMapper.convertValue(carEntity, CarDto.class);
 
         assertTrue(carService.getAllCars().contains(carDto));
-        this.mockMvc.perform(delete("/cars/delete_id/1"))
+        this.mockMvc.perform(delete("/cars/delete_id/{carId}", carId))
                 .andExpect(status().isNoContent());
         assertFalse(carService.getAllCars().contains(carDto));
     }
@@ -141,7 +160,7 @@ class CarControllerTest {
         carService.addCar(carDto);
 
         assertTrue(carService.getAllCars().contains(carDto));
-        this.mockMvc.perform(delete("/cars/delete_regNumber/a1"))
+        this.mockMvc.perform(delete("/cars/delete_regNumber/{regNumber}", regNumber))
                 .andExpect(status().isNoContent());
         assertFalse(carService.getAllCars().contains(carDto));
     }
