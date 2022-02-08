@@ -1,6 +1,7 @@
 package com.Volkov.service;
 
 import com.Volkov.db.entity.CarEntity;
+import com.Volkov.exceptions.ErrorType;
 import com.Volkov.exceptions.InsuranceException;
 import com.Volkov.exceptions.WrongAgeException;
 
@@ -13,7 +14,7 @@ public class ValidationService {
         if (car.isInsurance()) {
             return true;
         } else {
-            throw new InsuranceException("Can not add car without insurance");
+            throw new InsuranceException("Can not add car without insurance", ErrorType.NO_INSURANCE);
         }
     }
 

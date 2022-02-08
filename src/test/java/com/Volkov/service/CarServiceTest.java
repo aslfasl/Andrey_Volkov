@@ -1,22 +1,16 @@
 package com.Volkov.service;
 
 import com.Volkov.db.entity.CarEntity;
-import com.Volkov.db.entity.DriverEntity;
 import com.Volkov.db.repo.CarRepository;
-import com.Volkov.db.repo.DriverRepository;
 import com.Volkov.dto.CarDto;
 import com.Volkov.dto.Converter;
-import com.Volkov.exceptions.InsuranceException;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.exceptions.ObjectNotFoundException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.sound.midi.Soundbank;
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -145,7 +139,7 @@ class CarServiceTest {
     }
 
     @Test
-    void shouldDeleteCarById(){
+    void shouldDeleteCarById() {
         CarEntity car = new CarEntity("number", "model", "color", true);
         carRepositoryTest.save(car);
         int carId = car.getCarId();
@@ -187,5 +181,4 @@ class CarServiceTest {
         assertEquals("b2", allCars.get(1).getRegistrationNumber());
         assertEquals("c3", allCars.get(2).getRegistrationNumber());
     }
-
 }

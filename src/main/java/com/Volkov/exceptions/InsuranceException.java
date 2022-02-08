@@ -1,7 +1,13 @@
 package com.Volkov.exceptions;
 
-public class InsuranceException extends Exception{
-    public InsuranceException(String message) {
+import lombok.Getter;
+
+@Getter
+public class InsuranceException extends Exception {
+    private final ErrorType errorType;
+
+    public InsuranceException(String message, ErrorType errorType) {
         super(message);
+        this.errorType = errorType;
     }
 }
