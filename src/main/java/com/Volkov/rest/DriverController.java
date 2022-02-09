@@ -102,12 +102,8 @@ public class DriverController {
 
     @PostMapping("/add_car")
     public ResponseEntity<CarDto> addNewCarToDriver(@RequestParam int driverId, @RequestBody CarDto carDto)
-            throws InsuranceException {
-        try {
+            throws ObjectAlreadyExistsException {
             service.addCarToDriverByDriverId(carDto, driverId);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (ObjectAlreadyExistsException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
     }
 }

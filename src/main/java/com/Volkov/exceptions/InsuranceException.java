@@ -3,7 +3,8 @@ package com.Volkov.exceptions;
 import lombok.Getter;
 
 @Getter
-public class InsuranceException extends Exception {
+public class InsuranceException extends RuntimeException {
+
     private final ErrorType errorType;
 
     public InsuranceException(String message, ErrorType errorType) {

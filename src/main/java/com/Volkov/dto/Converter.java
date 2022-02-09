@@ -2,7 +2,9 @@ package com.Volkov.dto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class Converter {
     private static ObjectMapper objectMapper = JsonMapper.builder()
             .findAndAddModules()
