@@ -19,6 +19,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class CarServiceTest {
 
     @Autowired
+    private Converter converter;
+
+    @Autowired
     private CarRepository carRepositoryTest;
 
     @Autowired
@@ -118,7 +121,7 @@ class CarServiceTest {
         CarEntity carEntity = new CarEntity();
         carEntity.setRegistrationNumber("test");
         carRepositoryTest.save(carEntity);
-        CarDto carDto = Converter.convertValue(carEntity, CarDto.class);
+        CarDto carDto = converter.convertValue(carEntity, CarDto.class);
 
         ObjectAlreadyExistsException exception = assertThrows(ObjectAlreadyExistsException.class, () ->
                 carServiceTest.addCar(carDto));

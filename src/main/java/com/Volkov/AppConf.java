@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class AppConf {
@@ -17,7 +18,9 @@ public class AppConf {
     }
 
     @Bean
-    public Converter converter(ObjectMapper mapper){
-        return new Converter(mapper);
+    public Converter creatorConverter(ObjectMapper objectMapper){
+        Converter converter = new Converter();
+        converter.setObjectMapper(objectMapper);
+        return converter;
     }
 }

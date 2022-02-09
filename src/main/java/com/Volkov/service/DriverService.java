@@ -10,7 +10,6 @@ import com.Volkov.exceptions.InsuranceException;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.exceptions.ObjectNotFoundException;
 import com.Volkov.exceptions.WrongAgeException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +18,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
+
 @Service
 public class DriverService {
 
+    public DriverService(DriverRepository driverRepository, Converter converter) {
+        this.driverRepository = driverRepository;
+        this.converter = converter;
+    }
+
     private final DriverRepository driverRepository;
 
+    private final Converter converter;
 //    @SneakyThrows
 //    @PostConstruct
 //    public void init() {
@@ -55,7 +60,7 @@ public class DriverService {
 //    }
 
     public void addDriver(DriverDto driverDto) throws WrongAgeException, ObjectAlreadyExistsException {
-        DriverEntity driverEntity = Converter.convertValue(driverDto, DriverEntity.class);
+        DriverEntity driverEntity = converter.convertValue(driverDto, DriverEntity.class);
         if (driverRepository.existsDriverByNameAndBirthDate(driverEntity.getName(), driverEntity.getBirthDate())){
             throw new ObjectAlreadyExistsException("Driver already exists");
         }
@@ -70,7 +75,7 @@ public class DriverService {
         if (ValidationService.driverAgeCheck(birthDate)) {
             driverRepository.save(newDriver);
         }
-        return Converter.convertValue(newDriver, DriverDto.class);
+        return converter.convertValue(newDriver, DriverDto.class);
     }
 
     @Transactional(readOnly = true)
@@ -79,7 +84,7 @@ public class DriverService {
         if (driver == null) {
             throw new ObjectNotFoundException("Driver not found");
         } else {
-            return Converter.convertValue(driver, DriverDto.class);
+            return converter.convertValue(driver, DriverDto.class);
         }
     }
 
@@ -98,28 +103,28 @@ public class DriverService {
                 driver.setBirthDate(newBirthDate);
             }
             driverRepository.save(driver);
-            return Converter.convertValue(driver, DriverDto.class);
+            return converter.convertValue(driver, DriverDto.class);
         } else {
             throw new ObjectNotFoundException("Driver not found");
         }
     }
 
     public DriverDto getDriverByCarRegistrationNumber(String regNumber) {
-        return Converter.convertValue(driverRepository.findDriverEntityByCarRegistrationNumber(regNumber),
+        return converter.convertValue(driverRepository.findDriverEntityByCarRegistrationNumber(regNumber),
                 DriverDto.class);
     }
 
     public List<DriverDto> getAllDrivers() {
         return driverRepository.findAll()
                 .stream()
-                .map(driverEntity -> Converter.convertValue(driverEntity, DriverDto.class))
+                .map(driverEntity -> converter.convertValue(driverEntity, DriverDto.class))
                 .collect(Collectors.toList());
     }
 
     public void addCarToDriverByDriverId(CarDto carDto, int driverId)
             throws InsuranceException, ObjectAlreadyExistsException {
         DriverEntity driver = driverRepository.findDriverWithCarsById(driverId);
-        driver.addNewCar(Converter.convertValue(carDto, CarEntity.class));
+        driver.addNewCar(converter.convertValue(carDto, CarEntity.class));
         driverRepository.save(driver);
     }
 
@@ -127,7 +132,7 @@ public class DriverService {
         DriverEntity driver = driverRepository.findDriverWithCarsById(driverId);
         return driver.getCars()
                 .stream()
-                .map(carEntity -> Converter.convertValue(carEntity, CarDto.class))
+                .map(carEntity -> converter.convertValue(carEntity, CarDto.class))
                 .collect(Collectors.toList());
     }
 }

@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.sql.Driver;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,6 +22,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class DriverServiceTest {
+
+    @Autowired
+    private Converter converter;
 
     @Autowired
     DriverService driverServiceTest;
@@ -74,7 +76,7 @@ class DriverServiceTest {
     void shouldThrowObjectAlreadyExistsExceptionWhenAddDriver() {
         DriverEntity driverEntity = new DriverEntity("Name", LocalDate.of(2000, 1, 1));
         driverRepositoryTest.save(driverEntity);
-        DriverDto driverDto = Converter.convertValue(driverEntity, DriverDto.class);
+        DriverDto driverDto = converter.convertValue(driverEntity, DriverDto.class);
 
         ObjectAlreadyExistsException e =
                 assertThrows(ObjectAlreadyExistsException.class, () -> driverServiceTest.addDriver(driverDto));

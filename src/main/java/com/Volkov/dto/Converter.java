@@ -1,16 +1,14 @@
 package com.Volkov.dto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-@RequiredArgsConstructor
 public class Converter {
-    private static ObjectMapper objectMapper = JsonMapper.builder()
-            .findAndAddModules()
-            .build();
 
-    public static <T> T convertValue(Object fromValue, Class<T> toValueType){
+    @Setter
+    private ObjectMapper objectMapper;
+
+    public <T> T convertValue(Object fromValue, Class<T> toValueType){
         return objectMapper.convertValue(fromValue, toValueType);
     }
 }

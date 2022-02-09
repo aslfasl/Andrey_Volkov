@@ -6,16 +6,11 @@ import com.Volkov.dto.CarDto;
 import com.Volkov.dto.Converter;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.exceptions.ObjectNotFoundException;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.annotation.PostConstruct;
 
@@ -24,10 +19,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class CarService {
 
+    public CarService(CarRepository carRepository, com.Volkov.dto.Converter converter) {
+        this.carRepository = carRepository;
+        this.converter = converter;
+    }
+
     private final CarRepository carRepository;
+    private final Converter converter;
 
     @SneakyThrows
     @PostConstruct
@@ -52,7 +52,7 @@ public class CarService {
         if (carEntity == null) {
             throw new ObjectNotFoundException("Car not found");
         }
-        return Converter.convertValue(carEntity, CarDto.class);
+        return converter.convertValue(carEntity, CarDto.class);
 
     }
 
@@ -60,7 +60,7 @@ public class CarService {
         Optional<CarEntity> carOptional = carRepository.findById(carId);
         if (carOptional.isPresent()) {
             CarEntity carEntity = carOptional.get();
-            return Converter.convertValue(carEntity, CarDto.class);
+            return converter.convertValue(carEntity, CarDto.class);
         }
         throw new ObjectNotFoundException("Car not found");
     }
@@ -72,11 +72,11 @@ public class CarService {
             throw new ObjectAlreadyExistsException("Car with the same registration number already exists");
         }
         carRepository.save(car);
-        return Converter.convertValue(car, CarDto.class);
+        return converter.convertValue(car, CarDto.class);
     }
 
     public void addCar(CarDto carDto) throws ObjectAlreadyExistsException {
-        CarEntity carEntity = Converter.convertValue(carDto, CarEntity.class);
+        CarEntity carEntity = converter.convertValue(carDto, CarEntity.class);
         if (!carRepository.existsCarByRegistrationNumber(carEntity.getRegistrationNumber())) {
             carRepository.save(carEntity);
         } else {
@@ -103,13 +103,13 @@ public class CarService {
             car.setColor(newColor);
         }
         carRepository.save(car);
-        return Converter.convertValue(car, CarDto.class);
+        return converter.convertValue(car, CarDto.class);
     }
 
     public List<CarDto> getAllCars() {
         return carRepository.findAll()
                 .stream()
-                .map(carEntity -> Converter.convertValue(carEntity, CarDto.class))
+                .map(carEntity -> converter.convertValue(carEntity, CarDto.class))
                 .collect(Collectors.toList());
     }
 
