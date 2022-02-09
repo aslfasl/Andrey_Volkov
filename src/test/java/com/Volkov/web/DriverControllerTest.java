@@ -1,4 +1,4 @@
-package com.Volkov.rest;
+package com.Volkov.web;
 
 import com.Volkov.db.entity.CarEntity;
 import com.Volkov.db.entity.DriverEntity;

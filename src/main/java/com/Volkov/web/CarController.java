@@ -1,6 +1,5 @@
-package com.Volkov.rest;
+package com.Volkov.web;
 
-import com.Volkov.db.entity.CarEntity;
 import com.Volkov.dto.CarDto;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.exceptions.ObjectNotFoundException;

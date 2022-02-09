@@ -1,14 +1,11 @@
-package com.Volkov.rest;
+package com.Volkov.web;
 
-import com.Volkov.db.entity.DriverEntity;
 import com.Volkov.dto.CarDto;
 import com.Volkov.dto.DriverDto;
-import com.Volkov.exceptions.InsuranceException;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.exceptions.ObjectNotFoundException;
 import com.Volkov.exceptions.WrongAgeException;
 import com.Volkov.service.DriverService;
-import com.Volkov.service.CarService;
 import lombok.AllArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;

@@ -1,5 +1,8 @@
-package com.Volkov.exceptions;
+package com.Volkov.web;
 
+import com.Volkov.exceptions.ErrorMessage;
+import com.Volkov.exceptions.ErrorType;
+import com.Volkov.exceptions.InsuranceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

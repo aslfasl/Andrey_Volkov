@@ -1,11 +1,11 @@
-package com.Volkov;
+package com.Volkov.configuration;
 
 import com.Volkov.dto.Converter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+
 
 @Configuration
 public class AppConf {
@@ -22,5 +22,10 @@ public class AppConf {
         Converter converter = new Converter();
         converter.setObjectMapper(objectMapper);
         return converter;
+    }
+
+    @Bean
+    public WhatTime time() {
+        return new WhatTime();
     }
 }
