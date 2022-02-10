@@ -1,7 +1,14 @@
 package com.Volkov.exceptions;
 
-public class ObjectAlreadyExistsException extends Exception{
-    public ObjectAlreadyExistsException(String message) {
+import lombok.Getter;
+
+@Getter
+public class ObjectAlreadyExistsException extends RuntimeException{
+
+    private final ErrorType errorType;
+
+    public ObjectAlreadyExistsException(String message, ErrorType errorType) {
         super(message);
+        this.errorType = errorType;
     }
 }

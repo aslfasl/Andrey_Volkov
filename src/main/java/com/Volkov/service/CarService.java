@@ -4,6 +4,7 @@ import com.Volkov.db.entity.CarEntity;
 import com.Volkov.db.repo.CarRepository;
 import com.Volkov.dto.CarDto;
 import com.Volkov.dto.Converter;
+import com.Volkov.exceptions.ErrorType;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.exceptions.ObjectNotFoundException;
 import lombok.SneakyThrows;
@@ -29,23 +30,6 @@ public class CarService {
     private final CarRepository carRepository;
     private final Converter converter;
 
-    @SneakyThrows
-    @PostConstruct
-    public void init() {
-//        CarEntity car1 = new CarEntity();
-//        car1.setModel("bmw");
-//        DriverEntity driver = new DriverEntity();
-//        driver.setName("TestDriverForOneCarSave");
-//        car1.setOwner(driver);
-//
-//        carRepository.save(car1);
-
-
-//        System.out.println("GET CAR BY ID METHOD:");
-//        CarEntity car = getCarById(1);
-//        System.out.println(car);
-
-    }
 
     public CarDto getCarByRegistrationNumber(String regNumber) throws ObjectNotFoundException {
         CarEntity carEntity = carRepository.getCarEntityByRegistrationNumber(regNumber);
@@ -66,21 +50,23 @@ public class CarService {
     }
 
 
-    public CarDto addNewCar(String regNumber, String model, String color, boolean insurance) throws ObjectAlreadyExistsException {
+    public CarDto addNewCar(String regNumber, String model, String color, boolean insurance) {
         CarEntity car = new CarEntity(regNumber, model, color, insurance);
         if (carRepository.existsCarByRegistrationNumber(regNumber)) {
-            throw new ObjectAlreadyExistsException("Car with the same registration number already exists");
+            throw new ObjectAlreadyExistsException("Car with the same registration number already exists",
+                    ErrorType.ALREADY_EXISTS);
         }
         carRepository.save(car);
         return converter.convertValue(car, CarDto.class);
     }
 
-    public void addCar(CarDto carDto) throws ObjectAlreadyExistsException {
+    public void addCar(CarDto carDto) {
         CarEntity carEntity = converter.convertValue(carDto, CarEntity.class);
         if (!carRepository.existsCarByRegistrationNumber(carEntity.getRegistrationNumber())) {
             carRepository.save(carEntity);
         } else {
-            throw new ObjectAlreadyExistsException("Car with the same registration number already exists");
+            throw new ObjectAlreadyExistsException("Car with the same registration number already exists",
+                    ErrorType.ALREADY_EXISTS);
         }
     }
 

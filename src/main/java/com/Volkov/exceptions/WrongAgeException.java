@@ -1,7 +1,14 @@
 package com.Volkov.exceptions;
 
-public class WrongAgeException extends Exception{
-    public WrongAgeException(String message) {
+import lombok.Getter;
+
+@Getter
+public class WrongAgeException extends RuntimeException{
+
+    private final ErrorType errorType;
+
+    public WrongAgeException(String message, ErrorType errorType) {
         super(message);
+        this.errorType = errorType;
     }
 }

@@ -25,17 +25,13 @@ public class DriverController {
 
 
     @PostMapping("/add")
-    public ResponseEntity<DriverDto> addDriverToDatabase(@RequestBody DriverDto driverDto) {
+    public ResponseEntity<DriverDto> addDriverToDatabase(@RequestBody DriverDto driverDto) throws ObjectAlreadyExistsException {
         HttpHeaders headers = new HttpHeaders();
         if (driverDto == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        try {
-            service.addDriver(driverDto);
-            return new ResponseEntity<>(driverDto, headers, HttpStatus.CREATED);
-        } catch (WrongAgeException | ObjectAlreadyExistsException e) {
-            return new ResponseEntity<>(driverDto, headers, HttpStatus.BAD_REQUEST);
-        }
+        service.addDriver(driverDto);
+        return new ResponseEntity<>(driverDto, headers, HttpStatus.CREATED);
     }
 
     @PostMapping("/create")
@@ -44,12 +40,8 @@ public class DriverController {
             @RequestParam
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate birthDate) {
         HttpHeaders headers = new HttpHeaders();
-        try {
             DriverDto driverDto = service.addNewDriver(name, birthDate);
             return new ResponseEntity<>(driverDto, headers, HttpStatus.CREATED);
-        } catch (WrongAgeException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
     }
 
     @GetMapping("/get_cars/{driverId}")
@@ -100,7 +92,7 @@ public class DriverController {
     @PostMapping("/add_car")
     public ResponseEntity<CarDto> addNewCarToDriver(@RequestParam int driverId, @RequestBody CarDto carDto)
             throws ObjectAlreadyExistsException {
-            service.addCarToDriverByDriverId(carDto, driverId);
-            return new ResponseEntity<>(HttpStatus.OK);
+        service.addCarToDriverByDriverId(carDto, driverId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -1,5 +1,6 @@
 package com.Volkov.db.entity;
 
+import com.Volkov.exceptions.ErrorType;
 import com.Volkov.exceptions.InsuranceException;
 
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
@@ -46,7 +47,7 @@ public class DriverEntity {
 
     public void addNewCar(CarEntity car) throws InsuranceException, ObjectAlreadyExistsException {
         if (cars.contains(car)) {
-            throw new ObjectAlreadyExistsException("That driver already has this car");
+            throw new ObjectAlreadyExistsException("That driver already has this car", ErrorType.ALREADY_EXISTS);
         }
         if (ValidationService.insuranceCheck(car)){
             cars.add(car);

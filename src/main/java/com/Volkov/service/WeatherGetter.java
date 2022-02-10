@@ -10,13 +10,15 @@ import javax.annotation.PostConstruct;
 
 @Service
 @RequiredArgsConstructor
-public class AnnotatedBean {
+public class WeatherGetter {
 
     private final OtherClient otherClient;
 
-    @Scheduled(initialDelay = 1000L, fixedRate = 5000L)
+    @Scheduled(initialDelay = 7000L, fixedRate = 14000L)
     public void clicker() {
-        System.out.println("Random fact: " + otherClient.getFact());
+        String weather = otherClient.getWeather();
+        String forecast = weather.substring(weather.indexOf("forecast")-1, weather.indexOf("debug")) ;
+        System.out.println(forecast);
     }
 
     @SneakyThrows

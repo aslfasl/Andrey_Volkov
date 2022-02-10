@@ -6,10 +6,7 @@ import com.Volkov.db.repo.DriverRepository;
 import com.Volkov.dto.CarDto;
 import com.Volkov.dto.Converter;
 import com.Volkov.dto.DriverDto;
-import com.Volkov.exceptions.InsuranceException;
-import com.Volkov.exceptions.ObjectAlreadyExistsException;
-import com.Volkov.exceptions.ObjectNotFoundException;
-import com.Volkov.exceptions.WrongAgeException;
+import com.Volkov.exceptions.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,43 +27,13 @@ public class DriverService {
     private final DriverRepository driverRepository;
 
     private final Converter converter;
-//    @SneakyThrows
-//    @PostConstruct
-//    public void init() {
-//        DriverEntity driver = new DriverEntity();
-////        driver.setDateOfBirth(LocalDate.of(2000,1,1));
-//        driver.setName("TestDriver3withCars");
-//
-//        CarEntity car1 = new CarEntity();
-//        CarEntity car2 = new CarEntity();
-//        CarEntity car3 = new CarEntity();
-//
-//        car1.setModel("lada");
-//        car2.setModel("opel");
-//        car3.setModel("jeep");
-//
-//        System.out.println("********************************************************************");
-//        System.out.println(car1 == car2);
-//        System.out.println(car1.getCarId());
-//        System.out.println(car2.getCarId());
-//        System.out.println(car1.equals(car2));
-//        System.out.println("********************************************************************");
-//
-//        driver.addNewCar(car1);
-//        driver.addNewCar(car2);
-//        driver.addNewCar(car3);
-//
-//        driverRepository.save(driver);
-//    }
 
     public void addDriver(DriverDto driverDto) throws WrongAgeException, ObjectAlreadyExistsException {
         DriverEntity driverEntity = converter.convertValue(driverDto, DriverEntity.class);
-        if (driverRepository.existsDriverByNameAndBirthDate(driverEntity.getName(), driverEntity.getBirthDate())){
-            throw new ObjectAlreadyExistsException("Driver already exists");
+        if (driverRepository.existsDriverByNameAndBirthDate(driverEntity.getName(), driverEntity.getBirthDate())) {
+            throw new ObjectAlreadyExistsException("Driver already exists", ErrorType.ALREADY_EXISTS);
         }
-        if (!ValidationService.driverAgeCheck(driverEntity.getBirthDate())) {
-            throw new WrongAgeException("This age is not allowed");
-        }
+        ValidationService.driverAgeCheck(driverEntity.getBirthDate());
         driverRepository.save(driverEntity);
     }
 
@@ -94,7 +61,7 @@ public class DriverService {
 
     public DriverDto updateDriverById(int driverId, String newName, LocalDate newBirthDate) throws ObjectNotFoundException {
         Optional<DriverEntity> driverEntityOptionalOpt = driverRepository.findById(driverId);
-        if (driverEntityOptionalOpt.isPresent()){
+        if (driverEntityOptionalOpt.isPresent()) {
             DriverEntity driver = driverEntityOptionalOpt.get();
             if (newName != null) {
                 driver.setName(newName);
@@ -128,7 +95,7 @@ public class DriverService {
         driverRepository.save(driver);
     }
 
-    public List<CarDto> getDriverCarsByDriverId(int driverId){
+    public List<CarDto> getDriverCarsByDriverId(int driverId) {
         DriverEntity driver = driverRepository.findDriverWithCarsById(driverId);
         return driver.getCars()
                 .stream()
