@@ -1,6 +1,7 @@
 package com.Volkov.configuration;
 
 import com.Volkov.dto.Converter;
+import com.Volkov.service.WhatTime;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.springframework.context.annotation.Bean;

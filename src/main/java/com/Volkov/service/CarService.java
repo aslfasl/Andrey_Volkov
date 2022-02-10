@@ -60,10 +60,11 @@ public class CarService {
         return converter.convertValue(car, CarDto.class);
     }
 
-    public void addCar(CarDto carDto) {
+    public CarDto addCar(CarDto carDto) {
         CarEntity carEntity = converter.convertValue(carDto, CarEntity.class);
         if (!carRepository.existsCarByRegistrationNumber(carEntity.getRegistrationNumber())) {
             carRepository.save(carEntity);
+            return carDto;
         } else {
             throw new ObjectAlreadyExistsException("Car with the same registration number already exists",
                     ErrorType.ALREADY_EXISTS);

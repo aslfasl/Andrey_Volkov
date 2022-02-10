@@ -1,6 +1,6 @@
 package com.Volkov;
 
-import com.Volkov.configuration.WhatTime;
+import com.Volkov.service.WhatTime;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;

@@ -1,4 +1,4 @@
-package com.Volkov.web;
+package com.Volkov.exceptions;
 
 import com.Volkov.exceptions.*;
 import lombok.extern.slf4j.Slf4j;

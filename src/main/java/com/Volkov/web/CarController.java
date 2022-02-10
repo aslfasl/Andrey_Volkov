@@ -37,17 +37,11 @@ public class CarController {
 
     @PostMapping("/add")
     public ResponseEntity<CarDto> addCarToDatabase(@RequestBody CarDto carDto) {
-        HttpHeaders headers = new HttpHeaders();
         if (carDto == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        try {
-            service.addCar(carDto);
-            return new ResponseEntity<>(carDto, headers, HttpStatus.CREATED);
-        } catch (ObjectAlreadyExistsException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        CarDto carDto1 = service.addCar(carDto);
+        return new ResponseEntity<>(carDto1, HttpStatus.CREATED);
     }
 
     @GetMapping("/find_by_id")

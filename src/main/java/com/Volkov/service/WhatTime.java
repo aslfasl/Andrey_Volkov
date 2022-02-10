@@ -1,4 +1,4 @@
-package com.Volkov.configuration;
+package com.Volkov.service;
 
 import java.time.LocalTime;
 

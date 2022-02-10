@@ -4,6 +4,7 @@ import com.Volkov.db.entity.CarEntity;
 import com.Volkov.exceptions.ErrorType;
 import com.Volkov.exceptions.InsuranceException;
 import com.Volkov.exceptions.WrongAgeException;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -26,7 +27,7 @@ public class ValidationService {
         }
     }
 
-    public static boolean driverAgeCheck(LocalDate birthDate) throws WrongAgeException {
+    public static boolean driverAgeCheck(@NonNull LocalDate birthDate) throws WrongAgeException {
         LocalDate today = LocalDate.now();
         if (birthDate.isAfter(today)) {
             throw new WrongAgeException("This age is not allowed", ErrorType.WRONG_AGE);

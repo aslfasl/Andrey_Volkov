@@ -1,5 +1,14 @@
 package com.Volkov.service;
 
+import com.Volkov.db.entity.DriverEntity;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.time.LocalDate;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@SpringBootTest
 class ValidationServiceTest {
 
 //    @Test
@@ -16,11 +25,11 @@ class ValidationServiceTest {
 //        });
 //    }
 
-//    @Test
-//    void shouldCheckDriversAge() throws WrongAgeException {
-//        DriverEntity driverEntity = new DriverEntity(55, "James", LocalDate.of(1970, 6,17));
-//        assertTrue(ValidationService.driverAgeCheck(driverEntity.getDateOfBirth()));
-//    }
+    @Test
+    void shouldCheckDriversAge() {
+        DriverEntity driverEntity = new DriverEntity( "James", LocalDate.of(1970, 6,17));
+        assertTrue(ValidationService.driverAgeCheck(driverEntity.getBirthDate()));
+    }
 //
 //    @Test
 //    void shouldThrowWrongAgeException() {
