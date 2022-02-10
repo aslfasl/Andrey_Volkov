@@ -37,30 +37,6 @@ class DriverServiceTest {
         driverRepositoryTest.deleteAll();
     }
 
-    ////    @BeforeEach
-////    void setUp() {
-////        DriverEntity testDriver1Entity = new DriverEntity(1, "First Driver", LocalDate.of(2000, 1, 2));
-////        DriverEntity testDriver2Entity = new DriverEntity(
-////                2, "Second Driver", LocalDate.of(2000, 12, 31));
-////
-////        CarEntity testCar1Entity = new CarEntity("a1", "opel", "green", true);
-////        CarEntity testCar2Entity = new CarEntity("b2", "lada", "black", true);
-////        CarEntity testCar3Entity = new CarEntity("c3", "bmw", "white", true);
-////        CarEntity testCar4Entity = new CarEntity("d4", "jeep", "yellow", true);
-////
-////        try {
-////            driverService.addDriver(testDriver1Entity);
-////            driverService.addDriver(testDriver2Entity);
-////        } catch (WrongAgeException e) {
-////            e.printStackTrace();
-////        }
-////
-////        testDriver1Entity.addNewCar(testCar1Entity);
-////        testDriver1Entity.addNewCar(testCar2Entity);
-////        testDriver2Entity.addNewCar(testCar3Entity);
-////        testDriver2Entity.addNewCar(testCar4Entity);
-////    }
-//
     @Test
     void shouldAddNewDriverWhenOneIsGiven() throws WrongAgeException, ObjectAlreadyExistsException {
         String name = "TestDriver";

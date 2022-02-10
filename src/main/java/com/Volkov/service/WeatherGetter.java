@@ -16,7 +16,7 @@ public class WeatherGetter {
 
     @Scheduled(initialDelay = 7000L, fixedRate = 14000L)
     public void clicker() {
-        String weather = otherClient.getWeather();
+        String weather = otherClient.getWeather("${token}");
         String forecast = weather.substring(weather.indexOf("forecast")-1, weather.indexOf("debug")) ;
         System.out.println(forecast);
     }
