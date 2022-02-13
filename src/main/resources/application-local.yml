@@ -5,3 +5,7 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: postgres
     password: postgres
+
+validation:
+  minAge: 18
+  maxAge: 65

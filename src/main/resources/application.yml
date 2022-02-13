@@ -6,7 +6,3 @@ spring:
     hibernate:
       ddl-auto: update
 
-custom:
-  validation:
-    minAge: 18
-    maxAge: 65

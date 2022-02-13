@@ -5,19 +5,24 @@ import com.Volkov.exceptions.ErrorType;
 import com.Volkov.exceptions.InsuranceException;
 import com.Volkov.exceptions.WrongAgeException;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
+
+@RequiredArgsConstructor
 public class ValidationService {
 
-    @Value("${custom.validation.minAge}")
-    static int minAge;
+    @Value("${validation.minAge}")
+    int minAge;
 
-    @Value("${custom.validation.maxAge}")
-    static int maxAge;
+    @Value("${validation.maxAge}")
+    int maxAge;
 
     public static boolean insuranceCheck(CarEntity car) throws InsuranceException {
         if (car.isInsurance()) {
@@ -27,7 +32,7 @@ public class ValidationService {
         }
     }
 
-    public static boolean driverAgeCheck(@NonNull LocalDate birthDate) throws WrongAgeException {
+    public boolean driverAgeCheck(@NonNull LocalDate birthDate) throws WrongAgeException {
         LocalDate today = LocalDate.now();
         if (birthDate.isAfter(today)) {
             throw new WrongAgeException("This age is not allowed", ErrorType.WRONG_AGE);

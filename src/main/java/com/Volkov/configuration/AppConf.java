@@ -1,6 +1,7 @@
 package com.Volkov.configuration;
 
 import com.Volkov.dto.Converter;
+import com.Volkov.service.ValidationService;
 import com.Volkov.service.WhatTime;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -29,4 +30,7 @@ public class AppConf {
     public WhatTime time() {
         return new WhatTime();
     }
+
+    @Bean
+    public ValidationService validationServiceBean() {return new ValidationService();}
 }

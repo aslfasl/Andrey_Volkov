@@ -19,13 +19,14 @@ import java.util.stream.Collectors;
 @Service
 public class DriverService {
 
-    public DriverService(DriverRepository driverRepository, Converter converter) {
+    public DriverService(DriverRepository driverRepository, ValidationService validationService, Converter converter) {
         this.driverRepository = driverRepository;
+        this.validationService = validationService;
         this.converter = converter;
     }
 
     private final DriverRepository driverRepository;
-
+    private final ValidationService validationService;
     private final Converter converter;
 
     public void addDriver(DriverDto driverDto) throws WrongAgeException, ObjectAlreadyExistsException {
@@ -33,13 +34,13 @@ public class DriverService {
         if (driverRepository.existsDriverByNameAndBirthDate(driverEntity.getName(), driverEntity.getBirthDate())) {
             throw new ObjectAlreadyExistsException("Driver already exists", ErrorType.ALREADY_EXISTS);
         }
-        ValidationService.driverAgeCheck(driverEntity.getBirthDate());
+        validationService.driverAgeCheck(driverEntity.getBirthDate());
         driverRepository.save(driverEntity);
     }
 
     public DriverDto addNewDriver(String name, LocalDate birthDate) throws WrongAgeException {
         DriverEntity newDriver = new DriverEntity(name, birthDate);
-        if (ValidationService.driverAgeCheck(birthDate)) {
+        if (validationService.driverAgeCheck(birthDate)) {
             driverRepository.save(newDriver);
         }
         return converter.convertValue(newDriver, DriverDto.class);
