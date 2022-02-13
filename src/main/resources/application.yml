@@ -1,5 +1,9 @@
 spring:
 
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
   jpa:
     database: postgresql
     show-sql: true
