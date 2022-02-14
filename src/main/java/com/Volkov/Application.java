@@ -25,13 +25,5 @@ public class Application {
 		whatTime.isNow();
 	}
 
-	@Bean
-	public Docket swaggerConfig() {
-		return new Docket(DocumentationType.SWAGGER_2)
-				.select() // API selector builder
-//				.paths(PathSelectors.ant("/cars/*"))
-				.paths(PathSelectors.ant("/drivers/*"))
-				.apis(RequestHandlerSelectors.basePackage("com.Volkov"))
-				.build();
-	}
+
 }

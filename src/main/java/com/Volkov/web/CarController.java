@@ -4,6 +4,8 @@ import com.Volkov.dto.CarDto;
 import com.Volkov.exceptions.ObjectAlreadyExistsException;
 import com.Volkov.exceptions.ObjectNotFoundException;
 import com.Volkov.service.CarService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,7 +22,11 @@ public class CarController {
     private CarService service;
 
     @PostMapping("/create")
+    @ApiOperation(value = "Creates a new Car with requested params",
+            notes = "Write 3 requested params(regNumber, model, color) to create and add a new specific car to database.",
+            response = CarDto.class)
     public ResponseEntity<CarDto> createCar(
+            @ApiParam(value = "This is written on Vehicle Registration Plate", required = true)
             @RequestParam String regNumber,
             @RequestParam String model,
             @RequestParam String color,
