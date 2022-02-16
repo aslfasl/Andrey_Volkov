@@ -1,5 +1,6 @@
 package com.Volkov.web;
 
+import com.Volkov.dto.CarDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,6 +9,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -24,6 +28,21 @@ public class ViewController {
         log.debug(name);
         model.addAttribute("name", name);
         return "hello";
+    }
+
+    @GetMapping("/add_car")
+    public String addCar(Model model) {
+        CarDto carDto = new CarDto();
+        model.addAttribute("car", carDto);
+        List<String> booleanList = Arrays.asList("true", "false");
+        model.addAttribute("booleanList", booleanList);
+        return "add_car";
+    }
+
+    @PostMapping("/add_car")
+    public String addCar(@ModelAttribute("car") CarDto carDto) {
+        System.out.println(carDto);
+        return "car_added"; // TODO: 16.02.2022  
     }
 
     @RequestMapping("/add")

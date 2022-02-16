@@ -6,11 +6,8 @@ import com.Volkov.exceptions.InsuranceException;
 import com.Volkov.exceptions.WrongAgeException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
@@ -18,10 +15,10 @@ import java.time.temporal.ChronoUnit;
 @RequiredArgsConstructor
 public class ValidationService {
 
-    @Value("${validation.minAge}")
+    @Value("${validation.minAge: 18}")
     int minAge;
 
-    @Value("${validation.maxAge}")
+    @Value("${validation.maxAge: 65}")
     int maxAge;
 
     public static boolean insuranceCheck(CarEntity car) throws InsuranceException {

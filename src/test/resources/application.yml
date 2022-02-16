@@ -8,3 +8,7 @@ spring:
 
   jpa:
     spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
+
+  validation:
+    minAge: 18
+    maxAge: 65
