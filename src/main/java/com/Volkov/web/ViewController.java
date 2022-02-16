@@ -11,7 +11,12 @@ import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @Controller
-public class HtmlController {
+public class ViewController {
+
+    @GetMapping("/")
+    public String homePage() {
+        return "homepage";
+    }
 
 
     @GetMapping("/hello/{name}")

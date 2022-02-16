@@ -3,12 +3,16 @@ package com.Volkov.configuration;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 
 @Configuration
+@ComponentScan(value = "com.Volkov.web")
+@EnableWebMvc
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
     @Bean
