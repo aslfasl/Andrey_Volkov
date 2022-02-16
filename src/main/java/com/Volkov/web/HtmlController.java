@@ -21,13 +21,6 @@ public class HtmlController {
         return "hello";
     }
 
-    @PostMapping("/translate")
-    public String translate(@RequestParam String textForm, Model model) {
-        model.addAttribute("textForm", textForm);
-
-        return "success";
-    }
-
     @RequestMapping("/add")
     public ModelAndView add(HttpServletRequest request, HttpServletResponse response) {
         String name = request.getParameter("t1");
