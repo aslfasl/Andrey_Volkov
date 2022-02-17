@@ -9,6 +9,14 @@
 <html>
 <head>
     <title>Adding Driver</title>
+    <style type="text/css">
+        input, textarea, select, button {
+            width : 150px;
+            padding: 5px;
+            margin: 5px;
+            box-sizing: border-box;
+        }
+    </style>
     <script type="text/javascript">
         function take_values() {
             var n = document.forms["myform"]["name"].value;
@@ -34,15 +42,17 @@
     </script>
 </head>
 <body>
+<div style="text-align: center;">
+    <h2>Create driver</h2>
+</div>
 
-<center>
-    <form name="myform">
-        Name <input type="text" name="name"><br>
-        Birthdate <input type="text" name="birthdate"><br>
-        <input type="button" value="Submit" onclick="return take_values()">
-    </form>
 
-</center>
+<form name="myform" style="text-align: center">
+    Name <input type="text" name="name"><br>
+    Birthdate(YYYY-MM-DD) <input type="text" name="birthdate"><br>
+    <input type="button" value="Submit" onclick="return take_values()">
+</form>
+
 
 </body>
 </html>
