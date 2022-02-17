@@ -67,7 +67,7 @@ public class ViewController {
 
     @GetMapping("/submit")
     public String submit() {
-        return "test1";
+        return "test2";
     }
 
     @GetMapping("/car_list")
@@ -76,5 +76,10 @@ public class ViewController {
         modelAndView.setViewName("car_list");
         modelAndView.addObject("cars", cars);
         return modelAndView;
+    }
+
+    @GetMapping("/add_driver")
+    public String addDriver(){
+        return "add_driver";
     }
 }
