@@ -16,7 +16,6 @@
             margin: 5px 5px 5px 5px;
             text-align: left;
         }
-
     </style>
 </head>
 <body>
@@ -26,6 +25,7 @@
         <span>Model: </span><span>${car.model}</span><br/>
         <span>Color: </span><span>${car.color}</span><br/>
         <span>Insurance: </span><span>${car.insurance}</span><br/>
+        <a href="/home">Go home</a>
     </div>
 </body>
 </html>

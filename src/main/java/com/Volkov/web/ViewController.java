@@ -24,7 +24,7 @@ public class ViewController {
 
     private CarService carService;
 
-    @GetMapping("/")
+    @GetMapping("/home")
     public String homePage() {
         return "homepage";
     }
@@ -70,10 +70,11 @@ public class ViewController {
         return "test1";
     }
 
-    @GetMapping("/list")
-    public String listCar(ModelAndView modelAndView){
+    @GetMapping("/car_list")
+    public ModelAndView listCar(ModelAndView modelAndView){
         List<CarDto> cars = carService.getAllCars();
+        modelAndView.setViewName("car_list");
         modelAndView.addObject("cars", cars);
-        return "car_list";
+        return modelAndView;
     }
 }

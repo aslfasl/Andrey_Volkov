@@ -48,6 +48,8 @@
         <form:button>Save</form:button>
 
     </form:form>
+
+        <a href="/home">Go home</a>
     </div>
 
 </body>
