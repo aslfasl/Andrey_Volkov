@@ -14,7 +14,7 @@ public class WeatherGetter {
 
     private final OtherClient otherClient;
 
-    @Scheduled(initialDelay = 7000L, fixedRate = 14000L)
+    @Scheduled(initialDelay = 27000L, fixedRate = 24000L)
     public void clicker() {
         String weather = otherClient.getWeather();
         String forecast = weather.substring(weather.indexOf("forecast")-1, weather.indexOf("debug")) ;
