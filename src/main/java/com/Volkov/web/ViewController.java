@@ -30,13 +30,6 @@ public class ViewController {
     }
 
 
-    @GetMapping("/hello/{name}")
-    public String hello(Model model, @PathVariable String name) {
-        log.debug(name);
-        model.addAttribute("name", name);
-        return "hello";
-    }
-
     @GetMapping("/add_car")
     public String addCar(Model model) {
         CarDto carDto = new CarDto();
@@ -63,11 +56,6 @@ public class ViewController {
         mv.addObject("driverBirthday", birthday);
 
         return mv;
-    }
-
-    @GetMapping("/submit")
-    public String submit() {
-        return "test2";
     }
 
     @GetMapping("/car_list")

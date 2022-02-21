@@ -15,7 +15,6 @@ import java.util.Objects;
 @Table()
 public class CarEntity {
 
-    @NonNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column()

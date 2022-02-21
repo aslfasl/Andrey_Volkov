@@ -189,4 +189,5 @@ class DriverServiceTest {
         assertEquals(driverEntity.getCars().size(), carDtos.size());
         assertEquals(carEntity.getRegistrationNumber(), carDtos.get(0).getRegistrationNumber());
     }
+
 }
