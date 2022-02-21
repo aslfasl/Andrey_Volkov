@@ -23,6 +23,7 @@ public class Application {
 		ConfigurableApplicationContext applicationContext = SpringApplication.run(Application.class, args);
 		WhatTime whatTime = applicationContext.getBean(WhatTime.class);
 		whatTime.isNow();
+		System.out.println("I AM ALIVE!!!");
 	}
 
 
