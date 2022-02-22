@@ -42,7 +42,7 @@ public class ViewController {
     @PostMapping("/add_car")
     public String addCar(@ModelAttribute("car") CarDto carDto) {
         carService.addCar(carDto);
-        return "car_added"; // TODO: 16.02.2022  
+        return "car_added";
     }
 
     @RequestMapping("/add")
