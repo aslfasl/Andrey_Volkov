@@ -3,17 +3,13 @@ package com.Volkov.web;
 import com.Volkov.dto.CarDto;
 import com.Volkov.service.CarService;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,7 +42,7 @@ public class ViewController {
     }
 
     @RequestMapping("/add")
-    public ModelAndView add(HttpServletRequest request, HttpServletResponse response) {
+    public ModelAndView add(HttpServletRequest request) {
         String name = request.getParameter("t1");
         String birthday = request.getParameter("t2");
 
