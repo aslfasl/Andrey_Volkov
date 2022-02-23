@@ -1,0 +1,70 @@
+image: docker:19.03.0
+services:
+  - docker:19.03.0-dind
+
+variables:
+  # DOCKER_DRIVER: orverlay
+  SPRING_PROFILES_ACTIVE: gitlab-ci
+  # DOCKER_HOST: tcp://docker:2375/
+  # DOCKER_TLS_CERTDIR: ""
+
+stages:
+  - build
+  - package
+  - deploy
+
+maven-build:
+  image: maven:3-openjdk-11
+  stage: build
+  script: "mvn package -B -s ci_settings.xml"
+  artifacts:
+    paths:
+      - target/*.jar
+
+
+docker-build:
+  stage: package
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE .
+    - docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker push $CI_REGISTRY_IMAGE
+
+
+# ====== Utils ======
+.setup_ssh: &setup_ssh
+  - mkdir -p ~/.ssh
+  - 'which ssh-agent || ( apk update && apk add openssh openssh-client )'
+  - echo "$DEPLOY_SERVER_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+  - chmod 600 ~/.ssh/id_rsa
+  - eval "$(ssh-agent -s)"
+  - ssh-add ~/.ssh/id_rsa
+  - ssh-keyscan -H $SERVER >> ~/.ssh/known_hosts
+# ====== END Utils ======
+
+# ====== DEPLOY stage jobs ======
+.deploy: &deploy
+  #  tags:
+  #    - ding
+  services:
+    - name: docker:19.03-dind
+  before_script: *setup_ssh
+  script:
+    - ssh ec2-user@$SERVER "sudo sh ./docker-cleanup.sh || true"
+    - ssh ec2-user@$SERVER "cd server && docker image prune -f -a"
+    - ssh ec2-user@$SERVER "cd server; docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com;
+      docker pull $CI_REGISTRY_IMAGE;
+      docker run $CI_REGISTRY_IMAGE
+      docker logout registry.gitlab.com"
+
+
+deploy-dev:
+  stage: deploy
+  when:
+    manual
+  <<: *deploy
+  variables:
+    SERVER: "54.242.86.140"
+    ENV_PREFIX: "dev"
+  environment:
+    name: dev
+#    url:
